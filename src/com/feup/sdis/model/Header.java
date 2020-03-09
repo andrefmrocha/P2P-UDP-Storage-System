@@ -1,60 +1,53 @@
 package com.feup.sdis.model;
 
+import com.feup.sdis.actor.*;
+
 import java.util.Arrays;
 import java.util.UUID;
 
-enum MESSAGE_TYPE {
-    PUTCHUNK,
-    STORED,
-    GETCHUNK,
-    CHUNK,
-    DELETE,
-    REMOVED
-}
-
 public class Header {
     private char[] version;
-    private MESSAGE_TYPE messageType;
+    private MessageType messageType;
     private UUID senderId;
     private UUID fileId;
     private char[] chunkNo;
     private int replicationDeg;
 
-    public Header(char[] version, MESSAGE_TYPE messageType, UUID senderId, UUID fileId, int chunkNo, int replicationDeg) {
+    public Header(char[] version, MessageType messageType, UUID senderId, UUID fileId, int chunkNo, int replicationDeg) {
         this.messageType = messageType;
         this.senderId = senderId;
         this.fileId = fileId;
         final String chunkString = Integer.toString(chunkNo);
-        if(version.length != 3  || chunkString.length() <= 6  || chunkNo <= 9)
+        if (version.length != 3 || chunkString.length() <= 6 || chunkNo <= 9)
             throw new IllegalArgumentException();
         this.chunkNo = chunkString.toCharArray();
         this.replicationDeg = replicationDeg;
         this.version = version;
     }
 
-    public static Header parseHeader(String header) throws IllegalStateException{
+    public static Header parseHeader(String header) throws IllegalStateException {
         final String[] args = header.split("\\s+");
 
-        MESSAGE_TYPE messageType;
+        MessageType messageType;
 
-        switch (args[1]){
-            case "PUTCHUNK":
-                messageType = MESSAGE_TYPE.PUTCHUNK;
+        switch (args[1]) {
+            case PutChunk.type:
+                messageType = new PutChunk();
                 break;
-            case "STORED":
-                messageType = MESSAGE_TYPE.STORED;
+            case Stored.type:
+                messageType = new Stored();
                 break;
-            case "GETCHUNK":
-                messageType = MESSAGE_TYPE.GETCHUNK;
+            case GetChunk.type:
+                messageType = new GetChunk();
                 break;
-            case "CHUNK":
-                messageType = MESSAGE_TYPE.CHUNK;
+            case Chunk.type:
+                messageType = new Chunk();
                 break;
-            case "DELETE":
-                messageType = MESSAGE_TYPE.DELETE;
+            case Delete.type:
+                messageType = new Delete();
                 break;
-            case "REMOVED":
-                messageType = MESSAGE_TYPE.REMOVED;
+            case Removed.type:
+                messageType = new Removed();
                 break;
             default:
                 throw new IllegalStateException("Unexpected message type: " + args[1]);
@@ -72,7 +65,7 @@ public class Header {
 
     @Override
     public String toString() {
-        return Arrays.toString(version) + " " + messageType.name() +
+        return Arrays.toString(version) + " " + messageType.getType() +
                 " " + senderId + " " + fileId + " " +
                 Arrays.toString(chunkNo) + " " + replicationDeg + "\n\r";
     }
