@@ -7,7 +7,6 @@ public class Removed implements MessageType {
         return type;
     }
 
-
     @Override
     public String process() {
         return null;
