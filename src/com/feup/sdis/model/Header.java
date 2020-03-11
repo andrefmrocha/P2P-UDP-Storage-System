@@ -49,9 +49,12 @@ public class Header {
 
     public static Header parseHeader(String header) throws MessageError {
         final String[] args = header.split("\\s+");
-        if(args.length < 6){
+        int replicationDeg = -1;
+        if (args.length < 5) {
             throw new MessageError("Missing Header parameters!");
-        }
+        } else if (args.length == 6)
+            replicationDeg = Integer.parseInt(args[5]);
+
 
         return new Header(
                 args[0].toCharArray(),
@@ -59,7 +62,7 @@ public class Header {
                 UUID.fromString(args[2]),
                 UUID.fromString(args[3]),
                 Integer.parseInt(args[4]),
-                Integer.parseInt(args[5])
+                replicationDeg
         );
     }
 
@@ -67,6 +70,6 @@ public class Header {
     public String toString() {
         return Arrays.toString(version) + " " + messageType +
                 " " + senderId + " " + fileId + " " +
-                Arrays.toString(chunkNo) + " " + replicationDeg + "\n\r";
+                Arrays.toString(chunkNo) + " " + (replicationDeg == -1 ? "" : replicationDeg) + "\n\r";
     }
 }

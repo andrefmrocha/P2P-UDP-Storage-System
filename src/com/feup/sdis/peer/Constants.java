@@ -8,7 +8,7 @@ public class Constants {
     public static final int MC_PORT = 8080;
     public static final int MC_TTL = 1;
     public static final int MC_TIMEOUT = 3000;
-    public static final String registryName = "peer-" + ManagementFactory.getRuntimeMXBean().getName().trim();
+    public static final String SENDER_ID = "peer-" + ManagementFactory.getRuntimeMXBean().getName().trim();
     public static final int packetSize = (int) (Math.pow(2, 8) + Math.pow(2, 3));
-
+    public static final String version = "1.0";
 }

@@ -3,7 +3,7 @@ package com.feup.sdis.actor;
 import com.feup.sdis.model.Message;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
 public class Chunk extends MessageActor {
@@ -19,7 +19,7 @@ public class Chunk extends MessageActor {
     }
 
     @Override
-    public void process(Set<UUID> files) throws IOException { //TODO: Make Process
+    public void process(Map<UUID, Integer> files) throws IOException { //TODO: Make Process
     }
 
     @Override

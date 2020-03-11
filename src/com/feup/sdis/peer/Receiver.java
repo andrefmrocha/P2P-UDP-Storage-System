@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.UUID;
 
 public class Receiver implements Runnable {
@@ -21,10 +21,10 @@ public class Receiver implements Runnable {
             socket.joinGroup(InetAddress.getByName(Constants.MC_CHANNEL));
             socket.setTimeToLive(Constants.MC_TTL);
             socket.setSoTimeout(Constants.MC_TIMEOUT);
-            if(!(new File(Constants.registryName)).mkdir()){
+            if(!(new File(Constants.SENDER_ID)).mkdir()){
                 System.out.println("Failed to create directory!");
             }
-            final Set<UUID> fileSet = new HashSet<>();
+            final Map<UUID, Integer> files = new Hashtable<>();
 
             while (true) {
                 byte[] buf = new byte[Constants.packetSize];
@@ -35,11 +35,12 @@ public class Receiver implements Runnable {
                 new Thread(()-> {
                     try {
                         MessageActor actor = Message.parseMessage(msg);
-                        actor.process(fileSet);
+                        actor.process(files);
                     } catch (IOException | MessageError e) {
                         e.printStackTrace();
                     }
                 }).start();
+
 
             }
 
