@@ -1,7 +1,17 @@
 package com.feup.sdis.actor;
 
-public class Stored implements MessageType {
+import com.feup.sdis.model.Message;
+
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+
+public class Stored extends MessageActor {
     final static public String type =  "STORED";
+
+    public Stored(Message message) {
+        super(message);
+    }
 
     @Override
     public String getType() {
@@ -9,7 +19,13 @@ public class Stored implements MessageType {
     }
 
     @Override
-    public String process() {
-        return null;
+    public void process(Set<UUID> files) throws IOException { //TODO: Make Process
+
+    }
+
+
+    @Override
+    public boolean hasBody() {
+        return false;
     }
 }

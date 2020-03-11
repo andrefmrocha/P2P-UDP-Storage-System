@@ -11,6 +11,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
+import static com.feup.sdis.peer.Constants.registryName;
+
 public class Peer {
     public static void main(String[] args) {
 
@@ -19,7 +21,6 @@ public class Peer {
             final Dispatcher stub = (Dispatcher) UnicastRemoteObject.exportObject(dispatcher, 0);
             final Registry registry = LocateRegistry.createRegistry(1099);
 
-            String registryName = "peer-" + ManagementFactory.getRuntimeMXBean().getName();
             registry.rebind(registryName, stub);
             System.out.println("Peer " + registryName + " ready");
         } catch (RemoteException e) {

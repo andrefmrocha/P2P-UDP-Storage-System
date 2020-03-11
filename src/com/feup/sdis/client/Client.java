@@ -11,19 +11,19 @@ public class Client {
 
     public static void main(String[] args) throws IOException, NotBoundException {
         if(args.length != 4) {
-            System.out.println("Usage: java AppName <peer_ap> <operation> <opnd_1> <opnd_2>");
+            System.out.println("Usage: java AppName <peerAp> <operation> <opnd1> <opnd2>");
             return;
         }
 
-        final String peer_ap = args[0];
+        final String peerAp = args[0];
         final String operation = args[1];
-        final String opnd_1 = args[2];
-        final int opnd_2 = Integer.parseInt(args[3]);
+        final String opnd1 = args[2];
+        final int opnd2 = Integer.parseInt(args[3]);
 
         // check valid operation
 
         Registry registry = LocateRegistry.getRegistry("localhost");
-        Dispatcher stub = (Dispatcher) registry.lookup(peer_ap);
+        Dispatcher stub = (Dispatcher) registry.lookup(peerAp);
         String answer = stub.processMsg("oi");
 
         System.out.println("Answer: " + answer);

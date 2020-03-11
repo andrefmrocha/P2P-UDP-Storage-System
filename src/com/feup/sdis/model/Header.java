@@ -1,19 +1,41 @@
 package com.feup.sdis.model;
 
-import com.feup.sdis.actor.*;
-
 import java.util.Arrays;
 import java.util.UUID;
 
 public class Header {
     private char[] version;
-    private MessageType messageType;
+    private String messageType;
     private UUID senderId;
     private UUID fileId;
     private char[] chunkNo;
     private int replicationDeg;
 
-    public Header(char[] version, MessageType messageType, UUID senderId, UUID fileId, int chunkNo, int replicationDeg) {
+    public char[] getVersion() {
+        return version;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public UUID getSenderId() {
+        return senderId;
+    }
+
+    public UUID getFileId() {
+        return fileId;
+    }
+
+    public char[] getChunkNo() {
+        return chunkNo;
+    }
+
+    public int getReplicationDeg() {
+        return replicationDeg;
+    }
+
+    public Header(char[] version, String messageType, UUID senderId, UUID fileId, int chunkNo, int replicationDeg) {
         this.messageType = messageType;
         this.senderId = senderId;
         this.fileId = fileId;
@@ -25,37 +47,15 @@ public class Header {
         this.version = version;
     }
 
-    public static Header parseHeader(String header) throws IllegalStateException {
+    public static Header parseHeader(String header) throws MessageError {
         final String[] args = header.split("\\s+");
-
-        MessageType messageType;
-
-        switch (args[1]) {
-            case PutChunk.type:
-                messageType = new PutChunk();
-                break;
-            case Stored.type:
-                messageType = new Stored();
-                break;
-            case GetChunk.type:
-                messageType = new GetChunk();
-                break;
-            case Chunk.type:
-                messageType = new Chunk();
-                break;
-            case Delete.type:
-                messageType = new Delete();
-                break;
-            case Removed.type:
-                messageType = new Removed();
-                break;
-            default:
-                throw new IllegalStateException("Unexpected message type: " + args[1]);
+        if(args.length < 6){
+            throw new MessageError("Missing Header parameters!");
         }
 
         return new Header(
                 args[0].toCharArray(),
-                messageType,
+                args[1],
                 UUID.fromString(args[2]),
                 UUID.fromString(args[3]),
                 Integer.parseInt(args[4]),
@@ -65,7 +65,7 @@ public class Header {
 
     @Override
     public String toString() {
-        return Arrays.toString(version) + " " + messageType.getType() +
+        return Arrays.toString(version) + " " + messageType +
                 " " + senderId + " " + fileId + " " +
                 Arrays.toString(chunkNo) + " " + replicationDeg + "\n\r";
     }
