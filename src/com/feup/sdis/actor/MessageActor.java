@@ -20,8 +20,8 @@ public abstract class MessageActor {
         this.message = message;
     }
 
-    public static byte[] parseBody(String msg){
-        return msg.substring(msg.indexOf("\n\n")).getBytes();
+    public static String parseBody(String msg){
+        return msg.substring(msg.indexOf("\n\r\n\r") + 4);
     }
 
     protected void sendMessage(int port, String groupChannel, Header header) throws IOException {
@@ -41,6 +41,6 @@ public abstract class MessageActor {
     }
 
     abstract String getType();
-    public abstract void process(Map<UUID, Integer> files) throws IOException;
+    public abstract void process(Map<String, Integer> files) throws IOException;
     abstract boolean hasBody();
 }

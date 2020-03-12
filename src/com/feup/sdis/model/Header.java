@@ -4,14 +4,14 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class Header {
-    private char[] version;
+    private String version;
     private String messageType;
-    private UUID senderId;
-    private UUID fileId;
-    private char[] chunkNo;
+    private String senderId;
+    private String fileId;
+    private String chunkNo;
     private int replicationDeg;
 
-    public char[] getVersion() {
+    public String getVersion() {
         return version;
     }
 
@@ -19,15 +19,15 @@ public class Header {
         return messageType;
     }
 
-    public UUID getSenderId() {
+    public String getSenderId() {
         return senderId;
     }
 
-    public UUID getFileId() {
+    public String getFileId() {
         return fileId;
     }
 
-    public char[] getChunkNo() {
+    public String getChunkNo() {
         return chunkNo;
     }
 
@@ -35,14 +35,14 @@ public class Header {
         return replicationDeg;
     }
 
-    public Header(char[] version, String messageType, UUID senderId, UUID fileId, int chunkNo, int replicationDeg) {
+    public Header(String version, String messageType, String senderId, String fileId, int chunkNo, int replicationDeg) {
         this.messageType = messageType;
         this.senderId = senderId;
         this.fileId = fileId;
         final String chunkString = Integer.toString(chunkNo);
-        if (version.length != 3 || chunkString.length() <= 6 || chunkNo <= 9)
+        if (version.length() != 3 || chunkString.length() > 6 || replicationDeg > 9)
             throw new IllegalArgumentException();
-        this.chunkNo = chunkString.toCharArray();
+        this.chunkNo = chunkString;
         this.replicationDeg = replicationDeg;
         this.version = version;
     }
@@ -57,10 +57,10 @@ public class Header {
 
 
         return new Header(
-                args[0].toCharArray(),
+                args[0],
                 args[1],
-                UUID.fromString(args[2]),
-                UUID.fromString(args[3]),
+                args[2],
+                args[3],
                 Integer.parseInt(args[4]),
                 replicationDeg
         );
@@ -68,8 +68,8 @@ public class Header {
 
     @Override
     public String toString() {
-        return Arrays.toString(version) + " " + messageType +
+        return version + " " + messageType +
                 " " + senderId + " " + fileId + " " +
-                Arrays.toString(chunkNo) + " " + (replicationDeg == -1 ? "" : replicationDeg) + "\n\r";
+                chunkNo + " " + (replicationDeg == -1 ? "" : replicationDeg) + "\n\r";
     }
 }

@@ -2,7 +2,6 @@ package com.feup.sdis.actor;
 
 import com.feup.sdis.model.Message;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,8 +18,8 @@ public class Stored extends MessageActor {
     }
 
     @Override
-    public void process(Map<UUID, Integer> files) {
-        final UUID filedId = message.getHeader().getFileId();
+    public void process(Map<String, Integer> files) {
+        final String filedId = message.getHeader().getFileId();
         if(files.containsKey(filedId)){
             files.put(filedId, files.get(filedId) + 1);
         }

@@ -4,10 +4,9 @@ import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.peer.Constants;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
-import java.util.UUID;
 
 public class PutChunk extends MessageActor {
     final static public String type = "PUTCHUNK";
@@ -22,18 +21,19 @@ public class PutChunk extends MessageActor {
     }
 
     @Override
-    public void process(Map<UUID, Integer> files) throws IOException {
-        final UUID fileId = message.getHeader().getFileId();
+    public void process(Map<String, Integer> files) throws IOException {
+        final String fileId = message.getHeader().getFileId();
         if (!files.containsKey(fileId)) {
             files.put(fileId, 1);
-            FileOutputStream fileOutputStream = new FileOutputStream(Constants.SENDER_ID + "/" + fileId);
+            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + fileId);
             fileOutputStream.write(message.getBody());
+            fileOutputStream.close();
         }
 
         final Header sendingHeader = new Header(
-                Constants.version.toCharArray(),
-                Stored .type, UUID.nameUUIDFromBytes(Constants.SENDER_ID.getBytes()),
-                fileId, Integer.parseInt(new String(message.getHeader().getChunkNo())),
+                Constants.version,
+                Stored .type, Constants.SENDER_ID,
+                fileId, Integer.parseInt(message.getHeader().getChunkNo()),
                 message.getHeader().getReplicationDeg());
 
         this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, sendingHeader);

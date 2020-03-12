@@ -2,11 +2,15 @@ package com.feup.sdis.model;
 
 import com.feup.sdis.actor.*;
 
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.util.Arrays;
+
 public class Message {
     private final Header header;
-    private final byte[] body;
+    private final String body;
 
-    public Message(Header header, byte[] body) {
+    public Message(Header header, String body) {
         this.header = header;
         this.body = body;
     }
@@ -16,7 +20,7 @@ public class Message {
     }
 
     public static MessageActor parseMessage(String msg) throws MessageError {
-        final String headerMsg = msg.substring(0, msg.indexOf("\n\n"));
+        final String headerMsg = msg.substring(0, msg.indexOf("\n\r"));
         final Header header = Header.parseHeader(headerMsg);
         MessageActor messageActor;
 
@@ -45,11 +49,16 @@ public class Message {
         return messageActor;
     }
 
-    public byte[] getBody() {
+    public String getBody() {
         return body;
     }
 
     public Header getHeader() {
         return header;
+    }
+
+    public DatagramPacket generatePacket(InetAddress group, int port) {
+        final byte[] message = (header.toString() + "\n\r" + body.toString()).getBytes();
+        return new DatagramPacket(message, message.length, group, port);
     }
 }

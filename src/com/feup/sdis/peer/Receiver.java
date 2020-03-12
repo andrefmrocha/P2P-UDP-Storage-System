@@ -11,20 +11,18 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.UUID;
 
 public class Receiver implements Runnable {
     @Override
     public void run() {
-        try {
+        try { // TODO: Since this creates a socket on the moment it uses it, peer receive their own messages. This must be fixed, however this is good for debugging for now.
             final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT);
             socket.joinGroup(InetAddress.getByName(Constants.MC_CHANNEL));
             socket.setTimeToLive(Constants.MC_TTL);
-            socket.setSoTimeout(Constants.MC_TIMEOUT);
             if(!(new File(Constants.SENDER_ID)).mkdir()){
                 System.out.println("Failed to create directory!");
             }
-            final Map<UUID, Integer> files = new Hashtable<>();
+            final Map<String, Integer> files = new Hashtable<>();
 
             while (true) {
                 byte[] buf = new byte[Constants.packetSize];
@@ -32,6 +30,7 @@ public class Receiver implements Runnable {
 
                 socket.receive(packet);
                 String msg = new String(packet.getData(), 0, packet.getLength());
+                System.out.println("Received new message: " + msg);
                 new Thread(()-> {
                     try {
                         MessageActor actor = Message.parseMessage(msg);

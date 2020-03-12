@@ -19,7 +19,7 @@ public class GetChunk extends MessageActor {
     }
 
     @Override
-    public void process(Map<UUID, Integer> files) throws IOException {//TODO: Make Process
+    public void process(Map<String, Integer> files) throws IOException {//TODO: Make Process
 
     }
 

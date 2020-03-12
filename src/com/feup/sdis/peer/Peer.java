@@ -15,13 +15,14 @@ import static com.feup.sdis.peer.Constants.SENDER_ID;
 public class Peer {
     public static void main(String[] args) {
 
-        BSDispatcher dispatcher = new BSDispatcher(new HashMap<>());
+        BSDispatcher dispatcher = new BSDispatcher();
         try {
             final Dispatcher stub = (Dispatcher) UnicastRemoteObject.exportObject(dispatcher, 0);
             final Registry registry = LocateRegistry.createRegistry(1099);
 
-            registry.rebind(SENDER_ID, stub);
+            registry.rebind("MEIAS", stub);
             System.out.println("Peer " + SENDER_ID + " ready");
+            new Thread(new Receiver()).start();
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,7 @@
 package com.feup.sdis.client;
 
 import com.feup.sdis.actions.Dispatcher;
+import com.feup.sdis.model.MessageError;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -24,7 +25,12 @@ public class Client {
 
         Registry registry = LocateRegistry.getRegistry("localhost");
         Dispatcher stub = (Dispatcher) registry.lookup(peerAp);
-        String answer = stub.processMsg("oi");
+        String answer = null;
+        try {
+            answer = stub.processMsg(operation + " " + opnd1 + " " + opnd2);
+        } catch (MessageError messageError) {
+            messageError.printStackTrace();
+        }
 
         System.out.println("Answer: " + answer);
 

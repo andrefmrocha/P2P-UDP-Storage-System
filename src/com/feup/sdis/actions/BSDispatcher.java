@@ -1,17 +1,21 @@
 package com.feup.sdis.actions;
 
-import java.util.HashMap;
+import com.feup.sdis.model.MessageError;
 
 public class BSDispatcher implements Dispatcher {
 
-    private HashMap<String, String> table;
-
-    public BSDispatcher(HashMap<String, String> table) {
-        this.table = table;
-    }
-
-    public String processMsg(String msg) {
-        System.out.println("Processing msg:  " + msg);
+    public String processMsg(String msg) throws MessageError {
+        final String[] args = msg.split("\\s+");
+        Action action;
+        System.out.println(msg);
+        switch (args[0]){
+            case "BACKUP":
+                action = new Backup(args);
+                break;
+            default:
+                throw new MessageError("Wrong RMI message received!");
+        }
+        action.process();
         return "ola, tudo bem?";
     }
 }
