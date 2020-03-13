@@ -1,9 +1,7 @@
 package com.feup.sdis.actions;
 
 import com.feup.sdis.actor.PutChunk;
-import com.feup.sdis.model.Header;
-import com.feup.sdis.model.Message;
-import com.feup.sdis.model.MessageError;
+import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 import sun.misc.IOUtils;
 
@@ -53,7 +51,22 @@ public class Backup implements Action {
                         this.BLOCK_SIZE * i, Math.min(this.BLOCK_SIZE * (i + 1), fileContent.length()));
                 final Header header = new Header(Constants.version, PutChunk.type, senderId, fileId, i, this.replDeg);
                 final Message message = new Message(header, chunk);
-                socket.send(message.generatePacket(group, Constants.MC_PORT));
+                final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
+                socket.send(datagramPacket);
+                Store.instance().getReplCount().put(fileId + this.replDeg, 0);
+                for (int tries = 0; tries < Constants.MAX_PUT_CHUNK_TRIES; tries++){
+                    System.out.println("Replication degree not achieved for chunk no " + i + "of file " + fileId);
+                    try {
+                        Thread.sleep(1000);
+                        if(Store.instance().getReplCount().get(fileId + this.replDeg) >= this.replDeg)
+                            break;
+                        socket.send(datagramPacket);
+                    } catch (InterruptedException e) {
+                        tries--;
+                        e.printStackTrace();
+                    }
+
+                }
             }
 
         } catch (IOException e) {

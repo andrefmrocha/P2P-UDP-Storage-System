@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
 public abstract class MessageActor {
     protected final Message message;
@@ -41,6 +39,6 @@ public abstract class MessageActor {
     }
 
     abstract String getType();
-    public abstract void process(Map<String, Integer> files) throws IOException;
+    public abstract void process() throws IOException;
     abstract boolean hasBody();
 }

@@ -13,6 +13,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 public class Receiver implements Runnable {
+
+
     @Override
     public void run() {
         try { // TODO: Since this creates a socket on the moment it uses it, peer receive their own messages. This must be fixed, however this is good for debugging for now.
@@ -23,7 +25,6 @@ public class Receiver implements Runnable {
                 System.out.println("Failed to create directory!");
             }
             final Map<String, Integer> files = new Hashtable<>();
-
             while (true) {
                 byte[] buf = new byte[Constants.packetSize];
                 final DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -34,7 +35,7 @@ public class Receiver implements Runnable {
                 new Thread(()-> {
                     try {
                         MessageActor actor = Message.parseMessage(msg);
-                        actor.process(files);
+                        actor.process();
                     } catch (IOException | MessageError e) {
                         e.printStackTrace();
                     }
