@@ -36,7 +36,7 @@ public class Backup implements Action {
         }
 
         try {
-            final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT);
+            final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT); //TODO: Changes this to PUTCHUNK Channel
             final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
             socket.joinGroup(group);
             socket.setTimeToLive(Constants.MC_TTL);
@@ -44,7 +44,7 @@ public class Backup implements Action {
 
             final String fileContent = new String(Files.readAllBytes(sendingFile.toPath()), StandardCharsets.UTF_8);
             final int numChunks = (int) Math.ceil(fileContent.length() / (double) this.BLOCK_SIZE );
-            final String fileId = Integer.toString((fileContent + Constants.SENDER_ID).hashCode()); // TODO: Check actual algorithm for file storage
+            final String fileId = Action.generateId(fileContent);
             final String senderId = Constants.SENDER_ID;
             for(int i = 0; i < numChunks; i++){
                 final String chunk = fileContent.substring(

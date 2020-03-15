@@ -47,12 +47,23 @@ public class Header {
         this.version = version;
     }
 
+    public Header(String version, String messageType, String senderId, String fileId, int chunkNo) {
+        this(version, messageType, senderId, fileId, chunkNo, -1);
+    }
+
+    public Header(String version, String messageType, String senderId, String fileId) {
+        this(version, messageType, senderId, fileId, -1, -1);
+    }
+
     public static Header parseHeader(String header) throws MessageError {
         final String[] args = header.split("\\s+");
         int replicationDeg = -1;
-        if (args.length < 5) {
+        int chunkNo = -1;
+        if (args.length < 4)
             throw new MessageError("Missing Header parameters!");
-        } else if (args.length == 6)
+        if (args.length >= 5)
+            chunkNo = Integer.parseInt(args[4]);
+        if (args.length == 6)
             replicationDeg = Integer.parseInt(args[5]);
 
 
@@ -61,7 +72,7 @@ public class Header {
                 args[1],
                 args[2],
                 args[3],
-                Integer.parseInt(args[4]),
+                chunkNo,
                 replicationDeg
         );
     }
@@ -70,6 +81,6 @@ public class Header {
     public String toString() {
         return version + " " + messageType +
                 " " + senderId + " " + fileId + " " +
-                chunkNo + " " + (replicationDeg == -1 ? "" : replicationDeg) + "\n\r";
+                (chunkNo.equals("-1") ? "" : chunkNo) + " " + (replicationDeg == -1 ? "" : replicationDeg) + "\n\r";
     }
 }

@@ -58,7 +58,7 @@ public class Message {
     }
 
     public DatagramPacket generatePacket(InetAddress group, int port) {
-        final byte[] message = (header.toString() + "\n\r" + body.toString()).getBytes();
+        final byte[] message = (header.toString() + "\n\r" +(body == null ? "" : body)).getBytes();
         return new DatagramPacket(message, message.length, group, port);
     }
 }

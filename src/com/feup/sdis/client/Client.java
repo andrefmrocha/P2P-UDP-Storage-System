@@ -11,15 +11,19 @@ import java.rmi.registry.Registry;
 public class Client {
 
     public static void main(String[] args) throws IOException, NotBoundException {
-        if(args.length != 4) {
-            System.out.println("Usage: java AppName <peerAp> <operation> <opnd1> <opnd2>");
+        if(args.length < 3) {
+            System.out.println("Usage: java AppName <peerAp> <operation> <opnd1> [<opnd2>]");
             return;
         }
 
+        String msg = null;
+        if(args.length == 3){
+            msg = args[1] + "," + args[2];
+        } else if(args.length == 4){
+            msg = args[1] + "," + args[2] + "," + args[3];
+        }
+
         final String peerAp = args[0];
-        final String operation = args[1];
-        final String opnd1 = args[2];
-        final int opnd2 = Integer.parseInt(args[3]);
 
         // check valid operation
 
@@ -27,7 +31,7 @@ public class Client {
         Dispatcher stub = (Dispatcher) registry.lookup(peerAp);
         String answer = null;
         try {
-            answer = stub.processMsg(operation + " " + opnd1 + " " + opnd2);
+            answer = stub.processMsg(msg);
         } catch (MessageError messageError) {
             messageError.printStackTrace();
         }

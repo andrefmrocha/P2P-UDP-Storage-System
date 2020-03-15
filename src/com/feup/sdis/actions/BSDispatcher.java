@@ -5,12 +5,15 @@ import com.feup.sdis.model.MessageError;
 public class BSDispatcher implements Dispatcher {
 
     public String processMsg(String msg) throws MessageError {
-        final String[] args = msg.split("\\s+");
+        final String[] args = msg.split(",");
         Action action;
         System.out.println(msg);
         switch (args[0]){
             case "BACKUP":
                 action = new Backup(args);
+                break;
+            case "DELETE":
+                action = new Delete(args);
                 break;
             default:
                 throw new MessageError("Wrong RMI message received!");
