@@ -4,7 +4,6 @@ import com.feup.sdis.actor.*;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.Arrays;
 
 public class Message {
     private final Header header;

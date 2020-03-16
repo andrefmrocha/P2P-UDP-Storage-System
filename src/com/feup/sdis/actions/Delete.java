@@ -4,7 +4,6 @@ import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.model.MessageError;
 import com.feup.sdis.peer.Constants;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +45,8 @@ public class Delete implements Action {
 
             final Message msg = new Message(header);
             socket.send(msg.generatePacket(group, Constants.MC_PORT));
+            //TODO: Get the number of chunks
+//            Store.instance().getReplCount().remove(msg.getHeader().g);
 
 
         } catch (IOException e) {

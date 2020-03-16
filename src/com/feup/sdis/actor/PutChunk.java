@@ -22,7 +22,7 @@ public class PutChunk extends MessageActor {
 
     @Override
     public void process() throws IOException {
-        final String chunkId = message.getHeader().getFileId() + message.getHeader().getChunkNo();
+        final String chunkId = message.getHeader().getChunkId();
         if (!Store.instance().getStoredFiles().contains(chunkId)) {
             Store.instance().getStoredFiles().add(chunkId);
             PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + chunkId);
@@ -31,7 +31,7 @@ public class PutChunk extends MessageActor {
             final Header sendingHeader = new Header(
                     Constants.version,
                     Stored .type, Constants.SENDER_ID,
-                    chunkId, Integer.parseInt(message.getHeader().getChunkNo()),
+                    message.getHeader().getFileId(), Integer.parseInt(message.getHeader().getChunkNo()),
                     message.getHeader().getReplicationDeg());
 
             this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, sendingHeader);
