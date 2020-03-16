@@ -15,7 +15,7 @@ public class BSDispatcher implements Dispatcher {
             case "DELETE":
                 action = new Delete(args);
                 break;
-            case "RECOVER":
+            case "RESTORE":
                 action = new Restore(args);
                 break;
             default:

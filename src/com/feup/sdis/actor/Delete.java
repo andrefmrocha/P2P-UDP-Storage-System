@@ -26,7 +26,7 @@ public class Delete extends MessageActor {
         final String fileId = message.getHeader().getFileId();
         for(int i = 0; i < 1000; i++){ // TODO remove magic value
             if(storedFiles.contains(fileId+i)){
-                final File file = new File(Constants.SENDER_ID + "/" + fileId+i);
+                final File file = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + fileId+i);
                 if(!file.delete()){
                     System.out.println("Failed to delete file " + fileId + i);
                 }

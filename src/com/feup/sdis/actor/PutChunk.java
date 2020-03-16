@@ -27,9 +27,12 @@ public class PutChunk extends MessageActor {
         final String chunkId = fileID + chunkNo;
         if (!Store.instance().getStoredFiles().contains(chunkId)) {
             Store.instance().getStoredFiles().add(chunkId);
-            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + chunkId);
+            System.out.println(chunkId);
+
+            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
             fileOutputStream.write(message.getBody());
             fileOutputStream.close();
+
             final Header sendingHeader = new Header(
                     Constants.version,
                     Stored .type, Constants.SENDER_ID,

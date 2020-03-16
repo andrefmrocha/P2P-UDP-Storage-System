@@ -1,13 +1,11 @@
 package com.feup.sdis.model;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Set;
+import java.util.*;
 
 public class Store {
     private static Store storeInstance;
     final private Hashtable<String, Integer> replCount = new Hashtable<>(); //TODO: Check if this is the best approach
-    final private Hashtable<String, BackupFileInfo> backedUpFiles = new Hashtable<>();
+    final private SortedMap<String, BackupFileInfo> backedUpFiles = new TreeMap<>();
     final private Set<String> storedFiles = new HashSet<>();
 
     private Store(){}
@@ -20,7 +18,7 @@ public class Store {
         return storeInstance;
     }
 
-    public synchronized Hashtable<String, BackupFileInfo> getBackedUpFiles() { return backedUpFiles; }
+    public synchronized SortedMap<String, BackupFileInfo> getBackedUpFiles() { return backedUpFiles; }
     public synchronized Hashtable<String, Integer> getReplCount() {
         return replCount;
     }

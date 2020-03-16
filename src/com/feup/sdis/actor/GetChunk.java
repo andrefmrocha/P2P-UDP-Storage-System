@@ -7,7 +7,6 @@ import com.feup.sdis.peer.Constants;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -30,7 +29,7 @@ public class GetChunk extends MessageActor {
         final String chunkId = fileID + chunkNo;
 
         if (Store.instance().getStoredFiles().contains(chunkId)) {
-            File chunkFile = new File(Constants.SENDER_ID + "/" + chunkId);
+            File chunkFile = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
             final String fileContent = new String(Files.readAllBytes(chunkFile.toPath()), StandardCharsets.UTF_8);
 
             final Header sendingHeader = new Header(

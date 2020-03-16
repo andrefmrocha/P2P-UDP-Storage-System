@@ -67,7 +67,10 @@ public class Backup implements Action {
 
                 }
             }
-            Store.instance().getBackedUpFiles().put(sendingFile.getPath(), new BackupFileInfo(fileId, numChunks));
+            Store.instance().getBackedUpFiles().put(fileId, new BackupFileInfo( fileId,
+                                                                                sendingFile.getName(),
+                                                                                sendingFile.getPath(),
+                                                                                numChunks));
 
         } catch (IOException e) {
             e.printStackTrace();

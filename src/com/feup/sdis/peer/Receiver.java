@@ -22,7 +22,13 @@ public class Receiver implements Runnable {
             socket.joinGroup(InetAddress.getByName(Constants.MC_CHANNEL));
             socket.setTimeToLive(Constants.MC_TTL);
             if(!(new File(Constants.SENDER_ID)).mkdir()){
-                System.out.println("Failed to create directory!");
+                System.out.println("Failed to create peer directory!");
+            }
+            if(!(new File(Constants.SENDER_ID + "/" + Constants.backupFolder)).mkdir()){
+                System.out.println("Failed to create backups directory!");
+            }
+            if(!(new File(Constants.SENDER_ID + "/" + Constants.restoredFolder)).mkdir()){
+                System.out.println("Failed to create restored directory!");
             }
             final Map<String, Integer> files = new Hashtable<>();
             while (true) {

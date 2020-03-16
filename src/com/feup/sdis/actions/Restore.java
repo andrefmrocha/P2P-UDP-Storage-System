@@ -13,20 +13,26 @@ import java.util.Random;
 import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 
 public class Restore implements Action {
-    private final BackupFileInfo backupFileInfo;
+    private BackupFileInfo backupFileInfo;
     private final Random random = new Random();
 
     public Restore(String[] args) throws MessageError {
         if(args.length != 2) {
             throw new MessageError("Wrong number of parameters!");
         }
-        this.backupFileInfo = Store.instance().getBackedUpFiles().get(args[1]);
+
+        for (BackupFileInfo f : Store.instance().getBackedUpFiles().values()){
+            if (f.getOriginalPath().equals(args[1])) {
+                backupFileInfo = f;
+                break;
+            }
+        }
     }
 
     @Override
     public void process() {
         if (backupFileInfo == null) {
-            System.out.println("Failed is not backed up!");
+            System.out.println("File is not backed up!");
             return;
         }
 
@@ -43,6 +49,7 @@ public class Restore implements Action {
             final int numChunks = backupFileInfo.getNChunks();
             final String senderId = Constants.SENDER_ID;
             for(int i = 0; i < numChunks; i++){
+                System.out.println(numChunks);
 
                 final Header header = new Header(Constants.version, GetChunk.type, senderId, fileID, i);
                 final Message message = new Message(header);

@@ -34,7 +34,7 @@ public abstract class MessageActor {
         socket.joinGroup(group);
         socket.setTimeToLive(1);
         socket.setSoTimeout(Constants.MC_TIMEOUT);
-        final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
+        final DatagramPacket datagramPacket = msg.generatePacket(group, Constants.MC_PORT);
         socket.send(datagramPacket);
     }
 
