@@ -1,9 +1,11 @@
 package com.feup.sdis.actions;
 
 import com.feup.sdis.actor.PutChunk;
-import com.feup.sdis.model.*;
+import com.feup.sdis.model.Header;
+import com.feup.sdis.model.Message;
+import com.feup.sdis.model.MessageError;
+import com.feup.sdis.model.Store;
 import com.feup.sdis.peer.Constants;
-import sun.misc.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +14,12 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+
+import static com.feup.sdis.peer.Constants.BLOCK_SIZE;
 
 public class Backup implements Action {
     private final File sendingFile;
     private final int replDeg;
-    private final int BLOCK_SIZE = 64000;
 
     public Backup(String[] args) throws MessageError {
         if(args.length != 3){
@@ -43,12 +45,12 @@ public class Backup implements Action {
             socket.setSoTimeout(Constants.MC_TIMEOUT);
 
             final String fileContent = new String(Files.readAllBytes(sendingFile.toPath()), StandardCharsets.UTF_8);
-            final int numChunks = (int) Math.ceil(fileContent.length() / (double) this.BLOCK_SIZE );
+            final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE );
             final String fileId = Action.generateId(fileContent);
             final String senderId = Constants.SENDER_ID;
             for(int i = 0; i < numChunks; i++){
                 final String chunk = fileContent.substring(
-                        this.BLOCK_SIZE * i, Math.min(this.BLOCK_SIZE * (i + 1), fileContent.length()));
+                        BLOCK_SIZE * i, Math.min(BLOCK_SIZE * (i + 1), fileContent.length()));
                 final Header header = new Header(Constants.version, PutChunk.type, senderId, fileId, i, this.replDeg);
                 final Message message = new Message(header, chunk);
                 final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
@@ -67,6 +69,7 @@ public class Backup implements Action {
                     }
 
                 }
+                Store.instance().getBackedUpFiles().put(sendingFile.getPath(), fileId);
             }
 
         } catch (IOException e) {

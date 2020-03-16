@@ -15,10 +15,13 @@ public class BSDispatcher implements Dispatcher {
             case "DELETE":
                 action = new Delete(args);
                 break;
+            case "RECOVER":
+                action = new Restore(args);
+                break;
             default:
                 throw new MessageError("Wrong RMI message received!");
         }
         action.process();
-        return "ola, tudo bem?";
+        return "Message succesfully processed";
     }
 }

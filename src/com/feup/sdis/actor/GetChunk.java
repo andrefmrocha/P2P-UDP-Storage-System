@@ -5,7 +5,7 @@ import com.feup.sdis.model.Message;
 import java.io.IOException;
 
 public class GetChunk extends MessageActor {
-    final static public String type =  "GETCHUNK";
+    final static public String type = "GETCHUNK";
 
     public GetChunk(Message message) {
         super(message);
