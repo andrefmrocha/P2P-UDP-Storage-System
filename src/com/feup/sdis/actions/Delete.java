@@ -3,6 +3,7 @@ package com.feup.sdis.actions;
 import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.model.MessageError;
+import com.feup.sdis.model.Store;
 import com.feup.sdis.peer.Constants;
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
@@ -38,11 +39,13 @@ public class Delete implements Action {
             socket.setTimeToLive(Constants.MC_TTL);
             socket.setSoTimeout(Constants.MC_TIMEOUT);
             final String fileContent = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+            final String fileID = Action.generateId(fileContent);
+            Store.instance().getBackedUpFiles().remove(fileID);
 
             final Header header = new Header(
                     Constants.version,
                     com.feup.sdis.actor.Delete.type,
-                    Constants.SENDER_ID, Action.generateId(fileContent));
+                    Constants.SENDER_ID, fileID);
 
             final Message msg = new Message(header);
             socket.send(msg.generatePacket(group, Constants.MC_PORT));

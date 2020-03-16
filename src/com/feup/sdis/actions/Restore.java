@@ -48,8 +48,8 @@ public class Restore implements Action {
                 final Message message = new Message(header);
                 final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
 
-                int chunkN = i;
                 int tries = MAX_GET_CHUNK_TRIES;
+                int chunkN = i;
                 new Thread(()-> {
                     try {
                         for (int t = 0; t < tries; t++) {

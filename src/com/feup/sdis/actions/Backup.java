@@ -1,10 +1,7 @@
 package com.feup.sdis.actions;
 
 import com.feup.sdis.actor.PutChunk;
-import com.feup.sdis.model.Header;
-import com.feup.sdis.model.Message;
-import com.feup.sdis.model.MessageError;
-import com.feup.sdis.model.Store;
+import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 
 import java.io.File;
@@ -69,8 +66,8 @@ public class Backup implements Action {
                     }
 
                 }
-                Store.instance().getBackedUpFiles().put(sendingFile.getPath(), fileId);
             }
+            Store.instance().getBackedUpFiles().put(sendingFile.getPath(), new BackupFileInfo(fileId, numChunks));
 
         } catch (IOException e) {
             e.printStackTrace();

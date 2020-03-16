@@ -22,7 +22,7 @@ public abstract class MessageActor {
         return msg.substring(msg.indexOf("\n\r\n\r") + 4);
     }
 
-    protected void sendMessage(int port, String groupChannel, Header header) throws IOException {
+    protected void sendMessage(int port, String groupChannel, Message msg) throws IOException {
         try {
             Thread.sleep(random.nextInt(400 + 1));
         } catch (InterruptedException e) {
@@ -34,8 +34,8 @@ public abstract class MessageActor {
         socket.joinGroup(group);
         socket.setTimeToLive(1);
         socket.setSoTimeout(Constants.MC_TIMEOUT);
-        final String sendingHeader = header.toString();
-        socket.send(new DatagramPacket(sendingHeader.getBytes(), sendingHeader.getBytes().length, group, Constants.MC_PORT));
+        final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
+        socket.send(datagramPacket);
     }
 
     abstract String getType();
