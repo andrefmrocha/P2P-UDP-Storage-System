@@ -11,7 +11,7 @@ public class Store {
     final private SerializableHashMap replCount = new SerializableHashMap(Constants.SENDER_ID + "/" + "files.ser");
     //TODO: Check if this is the best approach
     final private SortedMap<String, BackupFileInfo> backedUpFiles = new TreeMap<>();
-    final private Set<String> storedFiles = new HashSet<>();
+    final private SortedMap<String, Integer> storedFiles = new TreeMap<>();
 
     private Store(){}
 
@@ -29,7 +29,7 @@ public class Store {
     }
 
 
-    public synchronized Set<String> getStoredFiles() {
+    public synchronized SortedMap<String, Integer> getStoredFiles() {
         return storedFiles;
     }
 

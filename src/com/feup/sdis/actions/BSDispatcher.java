@@ -18,6 +18,9 @@ public class BSDispatcher implements Dispatcher {
             case "RESTORE":
                 action = new Restore(args);
                 break;
+            case "RECLAIM":
+                action = new Reclaim(args);
+                break;
             default:
                 throw new MessageError("Wrong RMI message received!");
         }

@@ -23,8 +23,8 @@ public class PutChunk extends MessageActor {
     @Override
     public void process() throws IOException {
         final String chunkId = message.getHeader().getChunkId();
-        if (!Store.instance().getStoredFiles().contains(chunkId)) {
-            Store.instance().getStoredFiles().add(chunkId);
+        if (!Store.instance().getStoredFiles().containsKey(chunkId)) {
+            Store.instance().getStoredFiles().put(chunkId, message.getBody().length());
             PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + chunkId);
             fileOutputStream.write(message.getBody());
             fileOutputStream.close();
@@ -40,6 +40,8 @@ public class PutChunk extends MessageActor {
         }
 
     }
+
+    // TODO must store chunk no and desired replication degree
 
     @Override
     public boolean hasBody() {

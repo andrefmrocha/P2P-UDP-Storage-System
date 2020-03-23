@@ -28,7 +28,7 @@ public class GetChunk extends MessageActor {
         final String chunkNo = message.getHeader().getChunkNo();
         final String chunkId = fileID + chunkNo;
 
-        if (Store.instance().getStoredFiles().contains(chunkId)) {
+        if (Store.instance().getStoredFiles().containsKey(chunkId)) {
             File chunkFile = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
             final String fileContent = new String(Files.readAllBytes(chunkFile.toPath()), StandardCharsets.UTF_8);
 
