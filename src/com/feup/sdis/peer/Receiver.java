@@ -1,36 +1,22 @@
 package com.feup.sdis.peer;
 
 import com.feup.sdis.actor.MessageActor;
-import com.feup.sdis.model.Message;
 import com.feup.sdis.model.MessageError;
+import com.feup.sdis.model.SocketFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Hashtable;
-import java.util.Map;
 
-public class Receiver implements Runnable {
-
+public abstract class Receiver implements Runnable {
+    abstract MessageActor parseMessage(String msg) throws MessageError;
+    abstract int getPort();
+    abstract String getChannel();
 
     @Override
     public void run() {
         try { // TODO: Since this creates a socket on the moment it uses it, peer receive their own messages. This must be fixed, however this is good for debugging for now.
-            final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT);
-            socket.joinGroup(InetAddress.getByName(Constants.MC_CHANNEL));
-            socket.setTimeToLive(Constants.MC_TTL);
-            if(!(new File(Constants.SENDER_ID)).mkdir()){
-                System.out.println("Failed to create peer directory!");
-            }
-            if(!(new File(Constants.SENDER_ID + "/" + Constants.backupFolder)).mkdir()){
-                System.out.println("Failed to create backups directory!");
-            }
-            if(!(new File(Constants.SENDER_ID + "/" + Constants.restoredFolder)).mkdir()){
-                System.out.println("Failed to create restored directory!");
-            }
-            final Map<String, Integer> files = new Hashtable<>();
+            final MulticastSocket socket = SocketFactory.buildMulticastSocket(getPort(), getChannel());
             while (true) {
                 byte[] buf = new byte[Constants.packetSize];
                 final DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -40,18 +26,17 @@ public class Receiver implements Runnable {
                 System.out.println("Received new message: " + msg);
                 new Thread(()-> {
                     try {
-                        MessageActor actor = Message.parseMessage(msg);
+                        MessageActor actor = this.parseMessage(msg);
                         actor.process();
                     } catch (IOException | MessageError e) {
                         e.printStackTrace();
                     }
                 }).start();
-
-
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }

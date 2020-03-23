@@ -39,11 +39,8 @@ public class Restore implements Action {
         backupFileInfo.getRestoredChunks().clear();
 
         try {
-            final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT); //TODO: Changes this to MDR Channel
-            final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
-            socket.joinGroup(group);
-            socket.setTimeToLive(Constants.MC_TTL);
-            socket.setSoTimeout(Constants.MC_TIMEOUT);
+            final InetAddress group = InetAddress.getByName(Constants.MDR_CHANNEL);
+            final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, Constants.MDR_CHANNEL);
 
             final String fileID = backupFileInfo.getfileID();
             final int numChunks = backupFileInfo.getNChunks();
@@ -55,11 +52,10 @@ public class Restore implements Action {
                 final Message message = new Message(header);
                 final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
 
-                int tries = MAX_GET_CHUNK_TRIES;
                 int chunkN = i;
                 new Thread(()-> {
                     try {
-                        for (int t = 0; t < tries; t++) {
+                        for (int t = 0; t < MAX_GET_CHUNK_TRIES; t++) {
 
                             if(backupFileInfo.getRestoredChunks().contains(chunkN)) break;
 

@@ -6,6 +6,7 @@ public class Constants {
     private Constants() {} // no way to instantiate this class
     public static final String MC_CHANNEL = "224.0.0.0";
     public static final String MDB_CHANNEL = "224.0.0.1";
+    public static final String MDR_CHANNEL = "224.0.0.2";
     public static final int MC_PORT = 8080;
     public static final int MC_TTL = 1;
     public static final int MC_TIMEOUT = 3000;

@@ -35,12 +35,8 @@ public class Backup implements Action {
         }
 
         try {
-            final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT); //TODO: Changes this to PUTCHUNK Channel
-            final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
-            socket.joinGroup(group);
-            socket.setTimeToLive(Constants.MC_TTL);
-            socket.setSoTimeout(Constants.MC_TIMEOUT);
-
+            final InetAddress group = InetAddress.getByName(Constants.MDB_CHANNEL);
+            final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
             final String fileContent = new String(Files.readAllBytes(sendingFile.toPath()), StandardCharsets.UTF_8);
             final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE );
             final String fileId = Action.generateId(fileContent);

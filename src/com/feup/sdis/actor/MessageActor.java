@@ -2,6 +2,7 @@ package com.feup.sdis.actor;
 
 import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
+import com.feup.sdis.model.SocketFactory;
 import com.feup.sdis.peer.Constants;
 
 import java.io.IOException;
@@ -29,11 +30,8 @@ public abstract class MessageActor {
             Thread.currentThread().interrupt();
         }
 
-        final MulticastSocket socket = new MulticastSocket(port);
         final InetAddress group = InetAddress.getByName(groupChannel);
-        socket.joinGroup(group);
-        socket.setTimeToLive(1);
-        socket.setSoTimeout(Constants.MC_TIMEOUT);
+        final MulticastSocket socket = SocketFactory.buildMulticastSocket(port, group);
         final DatagramPacket datagramPacket = msg.generatePacket(group, Constants.MC_PORT);
         socket.send(datagramPacket);
     }

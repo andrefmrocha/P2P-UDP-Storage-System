@@ -1,9 +1,6 @@
 package com.feup.sdis.actions;
 
-import com.feup.sdis.model.Header;
-import com.feup.sdis.model.Message;
-import com.feup.sdis.model.MessageError;
-import com.feup.sdis.model.Store;
+import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 
 import java.io.File;
@@ -31,12 +28,8 @@ public class Delete implements Action {
         }
 
         try {
-            //TODO: Generalize socket generation
-            final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT);
             final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
-            socket.joinGroup(group);
-            socket.setTimeToLive(Constants.MC_TTL);
-            socket.setSoTimeout(Constants.MC_TIMEOUT);
+            final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
             final String fileContent = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
             final String fileID = Action.generateId(fileContent);
             Store.instance().getBackedUpFiles().remove(fileID);
