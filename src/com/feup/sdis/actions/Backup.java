@@ -46,26 +46,35 @@ public class Backup implements Action {
             final String fileId = Action.generateId(fileContent);
             final String senderId = Constants.SENDER_ID;
             for(int i = 0; i < numChunks; i++){
-                final String chunk = fileContent.substring(
-                        BLOCK_SIZE * i, Math.min(BLOCK_SIZE * (i + 1), fileContent.length()));
-                final Header header = new Header(Constants.version, PutChunk.type, senderId, fileId, i, this.replDeg);
-                final Message message = new Message(header, chunk);
-                final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
-                socket.send(datagramPacket);
-                Store.instance().getReplCount().put(fileId + this.replDeg, 0);
-                for (int tries = 0; tries < Constants.MAX_PUT_CHUNK_TRIES; tries++){
-                    System.out.println("Replication degree not achieved for chunk no " + i + "of file " + fileId);
+                int chunkNo = i;
+                new Thread(() -> {
+                    final String chunk = fileContent.substring(
+                            BLOCK_SIZE * chunkNo, Math.min(BLOCK_SIZE * (chunkNo + 1), fileContent.length()));
+                    final Header header = new Header(Constants.version, PutChunk.type, senderId, fileId, chunkNo, this.replDeg);
+                    final Message message = new Message(header, chunk);
+                    final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
+                    final String chunkId =  message.getHeader().getChunkId();
                     try {
-                        Thread.sleep(1000);
-                        if(Store.instance().getReplCount().get(fileId + this.replDeg) >= this.replDeg)
-                            break;
                         socket.send(datagramPacket);
-                    } catch (InterruptedException e) {
-                        tries--;
+                        Store.instance().getReplCount().put(chunkId, 0);
+                        for (int tries = 0; tries < Constants.MAX_PUT_CHUNK_TRIES; tries++){
+                            try {
+                                Thread.sleep(1000);
+                                if(Store.instance().getReplCount().get(chunkId) >= this.replDeg) {
+                                    break;
+                                }
+                                System.out.println("Replication degree not achieved for chunk no " + chunkNo + " of file " + fileId);
+                                socket.send(datagramPacket);
+                            } catch (InterruptedException e) {
+                                tries--;
+                                e.printStackTrace();
+                            }
+
+                        }
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-                }
+                }).start();
             }
             Store.instance().getBackedUpFiles().put(fileId, new BackupFileInfo( fileId,
                                                                                 sendingFile.getName(),

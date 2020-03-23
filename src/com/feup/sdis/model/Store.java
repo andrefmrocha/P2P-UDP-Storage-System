@@ -1,10 +1,15 @@
 package com.feup.sdis.model;
 
 import java.util.*;
+import com.feup.sdis.peer.Constants;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Store {
     private static Store storeInstance;
-    final private Hashtable<String, Integer> replCount = new Hashtable<>(); //TODO: Check if this is the best approach
+    final private SerializableHashMap replCount = new SerializableHashMap(Constants.SENDER_ID + "/" + "files.ser");
+    //TODO: Check if this is the best approach
     final private SortedMap<String, BackupFileInfo> backedUpFiles = new TreeMap<>();
     final private Set<String> storedFiles = new HashSet<>();
 
@@ -19,7 +24,7 @@ public class Store {
     }
 
     public synchronized SortedMap<String, BackupFileInfo> getBackedUpFiles() { return backedUpFiles; }
-    public synchronized Hashtable<String, Integer> getReplCount() {
+    public synchronized SerializableHashMap getReplCount() {
         return replCount;
     }
 

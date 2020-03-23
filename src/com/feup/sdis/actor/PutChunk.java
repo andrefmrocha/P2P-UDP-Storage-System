@@ -22,21 +22,17 @@ public class PutChunk extends MessageActor {
 
     @Override
     public void process() throws IOException {
-        final String fileID = message.getHeader().getFileId();
-        final String chunkNo = message.getHeader().getChunkNo();
-        final String chunkId = fileID + chunkNo;
+        final String chunkId = message.getHeader().getChunkId();
         if (!Store.instance().getStoredFiles().contains(chunkId)) {
             Store.instance().getStoredFiles().add(chunkId);
-            System.out.println(chunkId);
-
-            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
+            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + chunkId);
             fileOutputStream.write(message.getBody());
             fileOutputStream.close();
 
             final Header sendingHeader = new Header(
                     Constants.version,
                     Stored .type, Constants.SENDER_ID,
-                    fileID, Integer.parseInt(chunkNo),
+                    message.getHeader().getFileId(), Integer.parseInt(message.getHeader().getChunkNo()),
                     message.getHeader().getReplicationDeg());
 
             final Message message = new Message(sendingHeader);

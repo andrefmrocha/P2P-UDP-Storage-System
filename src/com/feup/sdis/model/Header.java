@@ -1,8 +1,5 @@
 package com.feup.sdis.model;
 
-import java.util.Arrays;
-import java.util.UUID;
-
 public class Header {
     private String version;
     private String messageType;
@@ -75,6 +72,10 @@ public class Header {
                 chunkNo,
                 replicationDeg
         );
+    }
+
+    public String getChunkId(){
+        return getFileId() + getChunkNo();
     }
 
     @Override

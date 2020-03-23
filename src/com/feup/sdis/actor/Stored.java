@@ -1,9 +1,8 @@
 package com.feup.sdis.actor;
 
 import com.feup.sdis.model.Message;
+import com.feup.sdis.model.SerializableHashMap;
 import com.feup.sdis.model.Store;
-
-import java.util.Hashtable;
 
 public class Stored extends MessageActor {
     final static public String type =  "STORED";
@@ -19,8 +18,8 @@ public class Stored extends MessageActor {
 
     @Override
     public void process() {
-        final String chunkId = message.getHeader().getFileId() + message.getHeader().getChunkNo();
-        final Hashtable<String, Integer> replCounter = Store.instance().getReplCount();
+        final String chunkId = message.getHeader().getChunkId();
+        final SerializableHashMap replCounter = Store.instance().getReplCount();
         final Integer currentReplications =
                 replCounter.getOrDefault(chunkId, 0);
         replCounter.put(chunkId, currentReplications + 1);

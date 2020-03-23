@@ -5,7 +5,6 @@ import com.feup.sdis.model.Store;
 import com.feup.sdis.peer.Constants;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 public class Delete extends MessageActor {
