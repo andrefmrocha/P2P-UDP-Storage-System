@@ -5,11 +5,6 @@ import com.feup.sdis.actor.PutChunk;
 import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.model.MessageError;
-import com.feup.sdis.model.SocketFactory;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 
 public class DataBackupChannelReceiver extends Receiver {
     @Override
