@@ -49,7 +49,6 @@ public class Restore implements Action {
             final int numChunks = backupFileInfo.getNChunks();
             final String senderId = Constants.SENDER_ID;
             for(int i = 0; i < numChunks; i++){
-                System.out.println(numChunks);
 
                 final Header header = new Header(Constants.version, GetChunk.type, senderId, fileID, i);
                 final Message message = new Message(header);

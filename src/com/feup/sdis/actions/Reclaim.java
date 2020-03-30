@@ -2,20 +2,16 @@ package com.feup.sdis.actions;
 
 import com.feup.sdis.actor.GetChunk;
 import com.feup.sdis.actor.Removed;
-import com.feup.sdis.model.Header;
-import com.feup.sdis.model.Message;
-import com.feup.sdis.model.MessageError;
-import com.feup.sdis.model.Store;
+import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Map;
 import java.util.SortedMap;
-
-import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 
 public class Reclaim implements Action {
     private final int maxDiskSpace;
@@ -31,13 +27,15 @@ public class Reclaim implements Action {
     public void process() {
 
         int usedSize = 0;
-        SortedMap<String, Integer> storedFiles = Store.instance().getStoredFiles();
-        for(Map.Entry<String,Integer> entry : storedFiles.entrySet()) {
+        SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
+        for(Map.Entry<String,StoredChunkInfo> entry : storedFiles.entrySet()) {
+            final String chunkID = entry.getKey();
+            StoredChunkInfo chunkInfo = entry.getValue();
             // chunks have the same size
-            usedSize += entry.getValue();
+            usedSize += chunkInfo.getChunkSize();
 
             if (usedSize > this.maxDiskSpace) {
-                // Send removed message
+                // Must remove
                 try {
                     final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT); //TODO: Changes this to MDR Channel
                     final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
@@ -45,14 +43,22 @@ public class Reclaim implements Action {
                     socket.setTimeToLive(Constants.MC_TTL);
                     socket.setSoTimeout(Constants.MC_TIMEOUT);
 
-                    final String fileID = entry.getKey(); // is this correct?
+                    final String fileID = chunkInfo.getFileID();
                     final String senderId = Constants.SENDER_ID;
+                    final int chunkNo = chunkInfo.getChunkNo();
 
-                    final Header header = new Header(Constants.version, Removed.type, senderId, fileID, i); // get chunk no somehow. from file or store info on putchunk
+                    // Send Removed message
+                    final Header header = new Header(Constants.version, Removed.type, senderId, fileID, chunkInfo.getChunkNo());
                     final Message message = new Message(header);
                     final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
-
                     socket.send(datagramPacket);
+
+                    // Delete stored chunk
+                    final File file = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkID);
+                    if(!file.delete()){
+                        System.out.println("Failed to delete chunk " + chunkID);
+                    }
+                    storedFiles.remove(chunkID);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

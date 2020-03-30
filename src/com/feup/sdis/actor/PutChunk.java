@@ -3,6 +3,7 @@ package com.feup.sdis.actor;
 import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.model.Store;
+import com.feup.sdis.model.StoredChunkInfo;
 import com.feup.sdis.peer.Constants;
 
 import java.io.IOException;
@@ -22,26 +23,37 @@ public class PutChunk extends MessageActor {
 
     @Override
     public void process() throws IOException {
-        final String chunkId = message.getHeader().getChunkId();
+        final Header msgHeader = message.getHeader();
+        final String chunkId = msgHeader.getChunkId();
         if (!Store.instance().getStoredFiles().containsKey(chunkId)) {
-            Store.instance().getStoredFiles().put(chunkId, message.getBody().length());
-            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + chunkId);
+
+            // store relevant information
+            String[] parts = chunkId.split(""+Constants.idSeparation);
+            if(parts.length != 2) {
+                System.out.println("Chunk ID malformed");
+                return;
+            }
+            String fileID = parts[0];
+            int desiredReplicationDegree = msgHeader.getReplicationDeg();
+            int chunkNo = Integer.parseInt(parts[1]);
+            int chunkSize = message.getBody().length();
+            Store.instance().getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
+
+            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
             fileOutputStream.write(message.getBody());
             fileOutputStream.close();
 
             final Header sendingHeader = new Header(
                     Constants.version,
                     Stored .type, Constants.SENDER_ID,
-                    message.getHeader().getFileId(), Integer.parseInt(message.getHeader().getChunkNo()),
-                    message.getHeader().getReplicationDeg());
+                    msgHeader.getFileId(), Integer.parseInt(msgHeader.getChunkNo()),
+                    msgHeader.getReplicationDeg());
 
             final Message message = new Message(sendingHeader);
             this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, message);
         }
 
     }
-
-    // TODO must store chunk no and desired replication degree
 
     @Override
     public boolean hasBody() {

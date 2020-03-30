@@ -18,4 +18,5 @@ public class Constants {
     public static final int MAX_GET_CHUNK_TRIES = 5;
     public static String backupFolder = "backups/";
     public static String restoredFolder = "restored/";
+    public static char idSeparation = '-';
 }
