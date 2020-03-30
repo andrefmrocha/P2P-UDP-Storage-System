@@ -1,6 +1,5 @@
 package com.feup.sdis.actions;
 
-import com.feup.sdis.actor.GetChunk;
 import com.feup.sdis.actor.Removed;
 import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
@@ -14,19 +13,19 @@ import java.util.Map;
 import java.util.SortedMap;
 
 public class Reclaim implements Action {
-    private final int maxDiskSpace;
 
     public Reclaim(String[] args) throws MessageError {
         if (args.length != 2) {
             throw new MessageError("Wrong number of parameters!");
         }
-        this.maxDiskSpace = Integer.parseInt(args[1]);
+        Store.instance().setMaxDiskSpace(Integer.parseInt(args[1]));
     }
 
     @Override
     public void process() {
-
+        int maxDiskSpace = Store.instance().getMaxDiskSpace();
         int usedSize = 0;
+
         SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
         for(Map.Entry<String,StoredChunkInfo> entry : storedFiles.entrySet()) {
             final String chunkID = entry.getKey();
@@ -34,7 +33,7 @@ public class Reclaim implements Action {
             // chunks have the same size
             usedSize += chunkInfo.getChunkSize();
 
-            if (usedSize > this.maxDiskSpace) {
+            if (usedSize > maxDiskSpace) {
                 // Must remove
                 try {
                     final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT); //TODO: Changes this to MDR Channel

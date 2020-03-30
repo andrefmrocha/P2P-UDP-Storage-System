@@ -25,7 +25,13 @@ public class PutChunk extends MessageActor {
     public void process() throws IOException {
         final Header msgHeader = message.getHeader();
         final String chunkId = msgHeader.getChunkId();
-        if (!Store.instance().getStoredFiles().containsKey(chunkId)) {
+        int chunkSize = message.getBody().length();
+        Store store = Store.instance();
+
+        int diskSpaceLimit = store.getMaxDiskSpace();
+        int usedDiskSpace = store.getUsedDiskSpace();
+        boolean fitsDisk = diskSpaceLimit == Constants.unlimitedDiskSpace || (usedDiskSpace+chunkSize <= diskSpaceLimit);
+        if (!store.getStoredFiles().containsKey(chunkId) && fitsDisk) {
 
             // store relevant information
             String[] parts = chunkId.split(""+Constants.idSeparation);
@@ -36,8 +42,7 @@ public class PutChunk extends MessageActor {
             String fileID = parts[0];
             int desiredReplicationDegree = msgHeader.getReplicationDeg();
             int chunkNo = Integer.parseInt(parts[1]);
-            int chunkSize = message.getBody().length();
-            Store.instance().getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
+            store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
 
             PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
             fileOutputStream.write(message.getBody());
