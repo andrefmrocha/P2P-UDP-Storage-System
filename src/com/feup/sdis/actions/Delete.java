@@ -21,10 +21,9 @@ public class Delete implements Action {
     }
 
     @Override
-    public void process() {
+    public String process() {
         if (!file.exists()) {
-            System.out.println("Failed to find file!");
-            return;
+            return "Failed to find file!";
         }
 
         try {
@@ -48,5 +47,6 @@ public class Delete implements Action {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return "Deleted successfully";
     }
 }
