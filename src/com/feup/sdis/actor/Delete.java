@@ -34,6 +34,7 @@ public class Delete extends MessageActor {
                     System.out.println("Failed to delete chunk " + chunkId);
                 }
                 storedFiles.remove(chunkId);
+                Store.instance().getReplCount().remove(chunkId);
             }
         }
 
