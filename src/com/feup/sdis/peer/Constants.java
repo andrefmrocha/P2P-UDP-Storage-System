@@ -13,10 +13,12 @@ public class Constants {
     public static final String SENDER_ID = "peer-" + ManagementFactory.getRuntimeMXBean().getName().trim();
     public static final int packetSize = (int) (Math.pow(2, 8) + Math.pow(2, 3));
     public static final String version = "1.0";
+    public static final String enhancedVersion = "1.1";
     public static final int MAX_FILE_SIZE = 6400000;
     public static final int BLOCK_SIZE = 64000;
     public static final int MAX_PUT_CHUNK_TRIES = 5;
     public static final int MAX_GET_CHUNK_TRIES = 5;
     public static String backupFolder = "backups/";
     public static String restoredFolder = "restored/";
+    public static final int TCP_PORT = 8001;
 }

@@ -32,14 +32,18 @@ public class GetChunk extends MessageActor {
             File chunkFile = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
             final String fileContent = new String(Files.readAllBytes(chunkFile.toPath()), StandardCharsets.UTF_8);
 
-            final Header sendingHeader = new Header(
-                    Constants.version,
-                    Chunk.type, Constants.SENDER_ID,
-                    fileID, Integer.parseInt(chunkNo));
-
-            final Message msg = new Message(sendingHeader, fileContent);
-            this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, msg);
+            sendFile(fileID, chunkNo, fileContent);
         }
+    }
+
+    protected void sendFile(String fileID, String chunkNo, String fileContent) throws IOException {
+        final Header sendingHeader = new Header(
+                Constants.version,
+                Chunk.type, Constants.SENDER_ID,
+                fileID, Integer.parseInt(chunkNo));
+
+        final Message msg = new Message(sendingHeader, fileContent);
+        this.sendMessage(Constants.MC_PORT, Constants.MDR_CHANNEL, msg);
     }
 
     @Override

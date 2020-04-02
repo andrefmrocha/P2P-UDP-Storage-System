@@ -19,7 +19,10 @@ public class ControlChannelReceiver extends Receiver {
                 messageActor = new Stored(new Message(header));
                 break;
             case GetChunk.type:
-                messageActor = new GetChunk(new Message(header));
+                if (header.getVersion().equals("1.0"))
+                    messageActor = new GetChunk(new Message(header));
+                else
+                    messageActor = new EnhancedGetChunk(new Message(header));
                 break;
             case Delete.type:
                 messageActor = new Delete(new Message(header));

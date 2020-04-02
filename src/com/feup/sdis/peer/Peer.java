@@ -13,7 +13,11 @@ import java.rmi.server.UnicastRemoteObject;
 import static com.feup.sdis.peer.Constants.SENDER_ID;
 
 public class Peer {
+    public static boolean enhanced = false;
     public static void main(String[] args) {
+        if(args.length == 1 && args[0].equals("ENHANCED")){
+            enhanced = true;
+        }
 
         BSDispatcher dispatcher = new BSDispatcher();
         try {
