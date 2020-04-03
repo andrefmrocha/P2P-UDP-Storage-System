@@ -47,7 +47,7 @@ public class Reclaim implements Action {
                     final int chunkNo = chunkInfo.getChunkNo();
 
                     // Send Removed message
-                    final Header header = new Header(Constants.version, Removed.type, senderId, fileID, chunkInfo.getChunkNo());
+                    final Header header = new Header(Constants.version, Removed.type, senderId, fileID, chunkNo);
                     final Message message = new Message(header);
                     final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
                     socket.send(datagramPacket);

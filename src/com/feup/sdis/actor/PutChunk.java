@@ -30,13 +30,12 @@ public class PutChunk extends MessageActor {
 
         int diskSpaceLimit = store.getMaxDiskSpace();
         int usedDiskSpace = store.getUsedDiskSpace();
-        boolean fitsDisk = diskSpaceLimit == Constants.unlimitedDiskSpace || (usedDiskSpace+chunkSize <= diskSpaceLimit);
+        boolean fitsDisk = (diskSpaceLimit == Constants.unlimitedDiskSpace || (usedDiskSpace+chunkSize <= diskSpaceLimit));
         if (!store.getStoredFiles().containsKey(chunkId) && fitsDisk) {
-
             // store relevant information
             String[] parts = chunkId.split(""+Constants.idSeparation);
             if(parts.length != 2) {
-                System.out.println("Chunk ID malformed");
+                System.out.println("Chunk ID malformed: " + chunkId);
                 return;
             }
             String fileID = parts[0];
