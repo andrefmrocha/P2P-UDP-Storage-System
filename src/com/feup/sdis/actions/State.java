@@ -2,6 +2,7 @@ package com.feup.sdis.actions;
 
 import com.feup.sdis.model.BackupFileInfo;
 import com.feup.sdis.model.Store;
+import com.feup.sdis.model.StoredChunkInfo;
 
 import java.util.Map;
 import java.util.Set;
@@ -19,10 +20,14 @@ public class State implements Action {
                     + " • " + "no chunks: " + file.getNChunks() + "\n";
         }
 
-        final Set<String> storedFiles = Store.instance().getStoredFiles();
+        final SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
         message += "Stored files:\n";
-        for (String file: storedFiles){
-            message += "• " + file;
+        for (Map.Entry<String, StoredChunkInfo> entry: storedFiles.entrySet()){
+            message += "• " + entry.getKey();
+            message += " - fileID :" + entry.getValue().getFileID();
+            message += " - desiredReplicationDegree :" + entry.getValue().getDesiredReplicationDegree();
+            message += " - chunkNo :" + entry.getValue().getChunkNo();
+            message += " - chunkSize :" + entry.getValue().getChunkSize();
         }
         return message;
     }

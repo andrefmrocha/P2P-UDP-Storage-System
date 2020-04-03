@@ -22,7 +22,7 @@ public class Reclaim implements Action {
     }
 
     @Override
-    public void process() {
+    public String process() {
         int maxDiskSpace = Store.instance().getMaxDiskSpace();
         int usedSize = 0;
 
@@ -63,6 +63,6 @@ public class Reclaim implements Action {
                 }
             }
         }
-
+        return "Reclaimed space";
     }
 }
