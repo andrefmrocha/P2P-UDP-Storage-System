@@ -53,12 +53,13 @@ public class Restore implements Action {
                 final Message message = new Message(header);
                 final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
 
-                int chunkN = i;
+                final int chunkN = i;
                 new Thread(() -> {
                     try {
                         for (int t = 0; t < MAX_GET_CHUNK_TRIES; t++) {
 
-                            if (backupFileInfo.getRestoredChunks().contains(chunkN)) break;
+                            if (backupFileInfo.getRestoredChunks().contains(chunkN) || backupFileInfo.isFullyRestored())
+                                break;
 
                             socket.send(datagramPacket);
                             Thread.sleep(1000);

@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.UUID;
 
 public class EnhancedGetChunk extends GetChunk {
     public EnhancedGetChunk(Message message) {
@@ -41,7 +40,7 @@ public class EnhancedGetChunk extends GetChunk {
         }
         out.flush();
         out.close();
-        while (in.readLine() != null);
+        while (!client.isClosed() && in.readLine() != null);
         in.close();
         client.close();
     }
