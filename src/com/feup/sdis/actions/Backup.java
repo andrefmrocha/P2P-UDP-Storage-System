@@ -81,5 +81,7 @@ public class Backup implements Action {
             e.printStackTrace();
         }
 
+        // TODO do not allow store if max disk space is reached
+
     }
 }

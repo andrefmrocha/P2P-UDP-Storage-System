@@ -5,7 +5,7 @@ import com.feup.sdis.model.SerializableHashMap;
 import com.feup.sdis.model.Store;
 
 public class Stored extends MessageActor {
-    final static public String type =  "STORED";
+    final static public String type = "STORED";
 
     public Stored(Message message) {
         super(message);

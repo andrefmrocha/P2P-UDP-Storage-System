@@ -2,10 +2,12 @@ package com.feup.sdis.actor;
 
 import com.feup.sdis.model.Message;
 import com.feup.sdis.model.Store;
+import com.feup.sdis.model.StoredChunkInfo;
 import com.feup.sdis.peer.Constants;
 
 import java.io.File;
-import java.util.Set;
+import java.util.Map;
+import java.util.SortedMap;
 
 public class Delete extends MessageActor {
     final static public String type =  "DELETE";
@@ -21,15 +23,18 @@ public class Delete extends MessageActor {
 
     @Override
     public void process() {
-        final Set<String> storedFiles = Store.instance().getStoredFiles();
+        final SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
         final String fileId = message.getHeader().getFileId();
-        for(int i = 0; i < 1000; i++){ // TODO remove magic value
-            if(storedFiles.contains(fileId+i)){
-                final File file = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + fileId+i);
+
+        for(Map.Entry<String,StoredChunkInfo> entry : storedFiles.entrySet()) {
+            String chunkId = entry.getKey();
+            if(chunkId.startsWith(fileId)) {
+                final File file = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
                 if(!file.delete()){
-                    System.out.println("Failed to delete file " + fileId + i);
+                    System.out.println("Failed to delete chunk " + chunkId);
                 }
-                storedFiles.remove(fileId+i);
+                storedFiles.remove(chunkId);
+                Store.instance().getReplCount().remove(chunkId);
             }
         }
 

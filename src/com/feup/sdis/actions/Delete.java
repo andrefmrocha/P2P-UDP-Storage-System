@@ -10,6 +10,8 @@ import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import static com.feup.sdis.peer.Constants.BLOCK_SIZE;
+
 public class Delete implements Action {
     private final File file;
 
@@ -32,7 +34,13 @@ public class Delete implements Action {
             final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
             final String fileContent = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
             final String fileID = Action.generateId(fileContent);
+            final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE );
+
+            // remove store info
             Store.instance().getBackedUpFiles().remove(fileID);
+            for(int chunkNo = 0; chunkNo < numChunks; chunkNo++) {
+                Store.instance().getReplCount().remove(fileID + Constants.idSeparation + chunkNo);
+            }
 
             final Header header = new Header(
                     Constants.version,
@@ -41,9 +49,6 @@ public class Delete implements Action {
 
             final Message msg = new Message(header);
             socket.send(msg.generatePacket(group, Constants.MC_PORT));
-            //TODO: Get the number of chunks
-//            Store.instance().getReplCount().remove(msg.getHeader().g);
-
 
         } catch (IOException e) {
             e.printStackTrace();
