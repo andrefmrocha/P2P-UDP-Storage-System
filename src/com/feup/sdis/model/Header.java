@@ -1,5 +1,7 @@
 package com.feup.sdis.model;
 
+import com.feup.sdis.peer.Constants;
+
 public class Header {
     private String version;
     private String messageType;
@@ -75,7 +77,7 @@ public class Header {
     }
 
     public String getChunkId(){
-        return getFileId() + getChunkNo();
+        return getFileId() + Constants.idSeparation + getChunkNo();
     }
 
     @Override
