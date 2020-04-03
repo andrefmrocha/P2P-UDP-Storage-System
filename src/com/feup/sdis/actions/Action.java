@@ -7,5 +7,5 @@ public interface Action {
         return  Integer.toString((fileContent + Constants.SENDER_ID).hashCode());
     }
 
-    void process();
+    String process();
 }

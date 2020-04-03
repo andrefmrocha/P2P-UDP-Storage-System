@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Random;
 
 import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 
@@ -30,10 +29,9 @@ public class Restore implements Action {
     }
 
     @Override
-    public void process() {
+    public String process() {
         if (backupFileInfo == null) {
-            System.out.println("File is not backed up!");
-            return;
+            return "File is not backed up!";
         }
 
         backupFileInfo.getRestoredChunks().clear();
@@ -74,6 +72,6 @@ public class Restore implements Action {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return "Failed restored";
     }
 }

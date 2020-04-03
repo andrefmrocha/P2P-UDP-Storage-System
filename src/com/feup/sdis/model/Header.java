@@ -1,5 +1,7 @@
 package com.feup.sdis.model;
 
+import com.feup.sdis.peer.Constants;
+
 public class Header {
     private final String hostname;
     private String version;
@@ -91,7 +93,7 @@ public class Header {
     }
 
     public String getChunkId(){
-        return getFileId() + getChunkNo();
+        return getFileId() + Constants.idSeparation + getChunkNo();
     }
 
     @Override
