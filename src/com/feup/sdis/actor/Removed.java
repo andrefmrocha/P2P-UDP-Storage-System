@@ -61,7 +61,7 @@ public class Removed extends MessageActor {
                     socket.setTimeToLive(Constants.MC_TTL);
                     socket.setSoTimeout(Constants.MC_TIMEOUT);
 
-                    File chunkFile = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
+                    File chunkFile = new File(Constants.backupFolder + chunkId);
                     final String fileContent = new String(Files.readAllBytes(chunkFile.toPath()), StandardCharsets.UTF_8);
                     final Header header = new Header(Constants.version, PutChunk.type, Constants.SENDER_ID, fileID, chunkNo, replDeg);
                     final Message message = new Message(header, fileContent);

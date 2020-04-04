@@ -40,9 +40,7 @@ public class Chunk extends MessageActor {
             for (String chunk : localInfo.getRestoredChunks().values())
                 fileContent.append(chunk);
 
-            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" +
-                    Constants.restoredFolder +
-                    localInfo.getOriginalFilename());
+            PrintWriter fileOutputStream = new PrintWriter(Constants.restoredFolder + localInfo.getOriginalFilename());
             fileOutputStream.println(fileContent.toString());
             fileOutputStream.flush();
             fileOutputStream.close();

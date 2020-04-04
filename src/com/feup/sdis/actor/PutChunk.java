@@ -43,7 +43,7 @@ public class PutChunk extends MessageActor {
             int chunkNo = Integer.parseInt(parts[1]);
             store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
 
-            PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
+            PrintWriter fileOutputStream = new PrintWriter(Constants.backupFolder + chunkId);
             fileOutputStream.write(message.getBody());
             fileOutputStream.close();
 

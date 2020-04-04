@@ -53,7 +53,7 @@ public class Reclaim implements Action {
                     socket.send(datagramPacket);
 
                     // Delete stored chunk
-                    final File file = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkID);
+                    final File file = new File(Constants.backupFolder + chunkID);
                     if(!file.delete()){
                         System.out.println("Failed to delete chunk " + chunkID);
                     }
