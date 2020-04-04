@@ -17,7 +17,7 @@ public abstract class Receiver implements Runnable {
 
     @Override
     public void run() {
-        try { // TODO: Since this creates a socket on the moment it uses it, peer receive their own messages. This must be fixed, however this is good for debugging for now.
+        try {
             final MulticastSocket socket = SocketFactory.buildMulticastSocket(getPort(), getChannel());
             final ExecutorService pool = Executors.newCachedThreadPool();
             while (true) {
@@ -26,6 +26,14 @@ public abstract class Receiver implements Runnable {
 
                 socket.receive(packet);
                 String msg = new String(packet.getData(), 0, packet.getLength());
+
+                String[] parts = msg.split(" ");
+                if (parts.length < 3) {
+                    System.out.println("Received malformed message: " + msg);
+                    continue;
+                }
+                if (parts[2].equals(Constants.SENDER_ID)) continue; // drop packets from same peer
+
                 System.out.println("Received new message: " + msg);
                 pool.execute(()-> {
                     try {
