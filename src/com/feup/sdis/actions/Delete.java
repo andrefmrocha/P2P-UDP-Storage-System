@@ -9,10 +9,15 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.feup.sdis.peer.Constants.BLOCK_SIZE;
 
 public class Delete implements Action {
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     private final File file;
 
     public Delete(String[] args) throws MessageError {
@@ -47,7 +52,19 @@ public class Delete implements Action {
                     Constants.SENDER_ID, fileID);
 
             final Message msg = new Message(header);
-            socket.send(msg.generatePacket(group, Constants.MC_PORT));
+            final AtomicInteger tries = new AtomicInteger();
+            scheduler.scheduleAtFixedRate(() -> {
+                if(tries.get() >= Constants.MAX_DELETE_TRIES)
+                    throw new RuntimeException();
+
+                try {
+                    socket.send(msg.generatePacket(group, Constants.MC_PORT));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                tries.getAndIncrement();
+
+            }, 0, Constants.DELETE_INTERVAL, TimeUnit.SECONDS);
 
         } catch (IOException e) {
             e.printStackTrace();
