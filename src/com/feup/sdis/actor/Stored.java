@@ -27,7 +27,6 @@ public class Stored extends MessageActor {
                 replCounter.getOrDefault(chunkId, new HashSet<>());
         if (!currentReplications.contains(message.getHeader().getSenderId())){
             currentReplications.add(message.getHeader().getSenderId());
-            replCounter.put(chunkId, currentReplications);
         }
     }
 
