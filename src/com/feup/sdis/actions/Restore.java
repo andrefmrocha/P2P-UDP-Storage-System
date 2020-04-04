@@ -43,9 +43,8 @@ public class Restore implements Action {
             final String fileID = backupFileInfo.getfileID();
             final int numChunks = backupFileInfo.getNChunks();
             final String senderId = Constants.SENDER_ID;
+            System.out.println("Starting restore protocol for file " + fileID);
             for (int i = 0; i < numChunks; i++) {
-                System.out.println(numChunks);
-
                 final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version,
                                     GetChunk.type, senderId, fileID, i);
                 final Message message = new Message(header);
@@ -56,9 +55,13 @@ public class Restore implements Action {
                     try {
                         for (int t = 0; t < MAX_GET_CHUNK_TRIES; t++) {
 
-                            if (backupFileInfo.getRestoredChunks().contains(chunkN) || backupFileInfo.isFullyRestored())
+                            if (backupFileInfo.getRestoredChunks().contains(chunkN)) break;
+                            if (backupFileInfo.isFullyRestored()) {
+                                System.out.println("File " + fileID + " fully restored");
                                 break;
+                            }
 
+                            System.out.println("Sending GET_CHUNK for chunk " + (chunkN+1) + "/" + MAX_GET_CHUNK_TRIES);
                             socket.send(datagramPacket);
                             Thread.sleep(1000);
                         }
@@ -72,6 +75,6 @@ public class Restore implements Action {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "Failed restored";
+        return "Restored file";
     }
 }

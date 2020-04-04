@@ -50,7 +50,7 @@ public class Backup implements Action {
                     final Message message = new Message(header, chunk);
                     final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
                     final String chunkId =  message.getHeader().getChunkId();
-                    System.out.println("Sending PUT_CHUNK for chunk " + chunkNo+1 + "/" + numChunks);
+                    System.out.println("Sending PUT_CHUNK for chunk " + chunkNo);
                     try {
                         socket.send(datagramPacket);
                         Store.instance().getReplCount().put(chunkId, 0);
@@ -60,7 +60,7 @@ public class Backup implements Action {
                                 if(Store.instance().getReplCount().get(chunkId) >= this.replDeg) {
                                     break;
                                 }
-                                System.out.println("[" + tries+1 + "/" + Constants.MAX_PUT_CHUNK_TRIES + "] Replication degree not achieved for chunk no " + chunkNo + " of file " + fileId + ", resending");
+                                System.out.println("[" + (tries+1) + "/" + Constants.MAX_PUT_CHUNK_TRIES + "] Replication degree not achieved for chunk no " + chunkNo + " of file " + fileId + ", resending");
                                 socket.send(datagramPacket);
                             } catch (InterruptedException e) {
                                 tries--;
@@ -82,6 +82,5 @@ public class Backup implements Action {
             e.printStackTrace();
         }
         return "Stored file";
-        // TODO do not allow store if max disk space is reached
     }
 }

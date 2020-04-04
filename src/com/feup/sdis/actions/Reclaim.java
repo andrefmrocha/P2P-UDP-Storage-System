@@ -23,6 +23,7 @@ public class Reclaim implements Action {
 
     @Override
     public String process() {
+        System.out.println("Starting reclaim protocol");
         int maxDiskSpace = Store.instance().getMaxDiskSpace();
         int usedSize = 0;
 
@@ -45,6 +46,7 @@ public class Reclaim implements Action {
                     final String fileID = chunkInfo.getFileID();
                     final String senderId = Constants.SENDER_ID;
                     final int chunkNo = chunkInfo.getChunkNo();
+                    System.out.println("Reached max disk space, sending REMOVED msg for file " + fileID);
 
                     // Send Removed message
                     final Header header = new Header(Constants.version, Removed.type, senderId, fileID, chunkNo);

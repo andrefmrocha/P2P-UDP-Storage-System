@@ -23,6 +23,7 @@ public class Stored extends MessageActor {
         final Integer currentReplications =
                 replCounter.getOrDefault(chunkId, 0);
         replCounter.put(chunkId, currentReplications + 1);
+        System.out.println("Updated replication count for chunk " + chunkId + ": " + (currentReplications+1));
     }
 
 

@@ -24,6 +24,7 @@ public class Delete implements Action {
 
     @Override
     public String process() {
+        System.out.println("Starting delete protocol");
         if (!file.exists()) {
             return "Failed to find file!";
         }
@@ -47,11 +48,12 @@ public class Delete implements Action {
                     Constants.SENDER_ID, fileID);
 
             final Message msg = new Message(header);
+            System.out.println("Sending DELETE message for file " + fileID);
             socket.send(msg.generatePacket(group, Constants.MC_PORT));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "Deleted successfully";
+        return "Deleted file";
     }
 }
