@@ -1,10 +1,10 @@
 package com.feup.sdis.model;
 
-import java.util.*;
 import com.feup.sdis.peer.Constants;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Store {
     private static Store storeInstance;
