@@ -4,18 +4,19 @@ import com.feup.sdis.model.Message;
 import com.feup.sdis.model.SerializableHashMap;
 import com.feup.sdis.model.Store;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Stored extends MessageActor {
-    final static public String type = "STORED";
+public class Deleted extends MessageActor {
+    final static public String type = "DELETED";
 
-    public Stored(Message message) {
+    public Deleted(Message message) {
         super(message);
     }
 
     @Override
-    public String getType() {
+    String getType() {
         return type;
     }
 
@@ -25,15 +26,15 @@ public class Stored extends MessageActor {
         final SerializableHashMap replCounter = Store.instance().getReplCount();
         final Set<String> currentReplications =
                 replCounter.getOrDefault(chunkId, new HashSet<>());
-        if (!currentReplications.contains(message.getHeader().getSenderId())){
-            currentReplications.add(message.getHeader().getSenderId());
+        if (!currentReplications.contains(chunkId)){
+            currentReplications.remove(chunkId);
             replCounter.put(chunkId, currentReplications);
         }
+
     }
 
-
     @Override
-    public boolean hasBody() {
+    boolean hasBody() {
         return false;
     }
 }
