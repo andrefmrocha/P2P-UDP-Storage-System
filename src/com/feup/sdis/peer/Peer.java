@@ -60,16 +60,16 @@ public class Peer {
 
     public static void createPeerFolders() {
         if(!(new File(Constants.peerParentFolder)).mkdir()){
-            System.out.println("Failed to create peer directory!");
+            System.out.println("Folder already exists or failed to be created: " + Constants.peerParentFolder);
         }
         if(!(new File(Constants.peerRootFolder)).mkdir()){
-            System.out.println("Failed to create peer directory!");
+            System.out.println("Folder already exists or failed to be created: " + Constants.peerRootFolder);
         }
         if(!(new File(Constants.backupFolder)).mkdir()){
-            System.out.println("Failed to create backups directory!");
+            System.out.println("Folder already exists or failed to be created: " + Constants.backupFolder);
         }
         if(!(new File(Constants.restoredFolder)).mkdir()){
-            System.out.println("Failed to create restored directory!");
+            System.out.println("Folder already exists or failed to be created: " + Constants.restoredFolder);
         }
     }
 }

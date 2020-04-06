@@ -1,9 +1,6 @@
 package com.feup.sdis.actor;
 
-import com.feup.sdis.model.Header;
-import com.feup.sdis.model.Message;
-import com.feup.sdis.model.Store;
-import com.feup.sdis.model.StoredChunkInfo;
+import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 
 import java.io.IOException;
@@ -52,18 +49,23 @@ public class PutChunk extends MessageActor {
         int chunkNo = Integer.parseInt(parts[1]);
         store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
 
+        // update own replication count
+        final SerializableHashMap replCounter = Store.instance().getReplCount();
+        final Integer currentReplications = replCounter.getOrDefault(chunkId, 0);
+        replCounter.put(chunkId, currentReplications + 1);
+
+        // write chunk to disk
         PrintWriter fileOutputStream = new PrintWriter(Constants.backupFolder + chunkId);
         fileOutputStream.write(message.getBody());
         fileOutputStream.close();
 
+        // send STORED message
         final Header sendingHeader = new Header(
                 Constants.version,
                 Stored .type, Constants.SENDER_ID,
                 msgHeader.getFileId(), Integer.parseInt(msgHeader.getChunkNo()),
                 msgHeader.getReplicationDeg());
-
         final Message message = new Message(sendingHeader);
-
         System.out.println("Stored chunk " + chunkId + ", sending STORED msg");
         this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, message);
 
