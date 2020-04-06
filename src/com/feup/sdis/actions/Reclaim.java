@@ -60,6 +60,8 @@ public class Reclaim implements Action {
                         System.out.println("Failed to delete chunk " + chunkID);
                     }
                     storedFiles.remove(chunkID);
+                    Store.instance().updateReplCount(chunkID, -1);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

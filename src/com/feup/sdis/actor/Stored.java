@@ -18,12 +18,7 @@ public class Stored extends MessageActor {
 
     @Override
     public void process() {
-        final String chunkId = message.getHeader().getChunkId();
-        final SerializableHashMap replCounter = Store.instance().getReplCount();
-        final Integer currentReplications =
-                replCounter.getOrDefault(chunkId, 0);
-        replCounter.put(chunkId, currentReplications + 1);
-        System.out.println("Updated replication count for chunk " + chunkId + ": " + (currentReplications+1));
+        Store.instance().updateReplCount(message.getHeader().getChunkId(), 1);
     }
 
 

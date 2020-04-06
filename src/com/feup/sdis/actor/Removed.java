@@ -37,20 +37,10 @@ public class Removed extends MessageActor {
 
         // update repl count on all peers
         final SerializableHashMap replCount = Store.instance().getReplCount();
-        final Integer currReplDegree = replCount.get(chunkId);
-        if(currReplDegree == null) {
-            System.out.println("[REMOVED] Did not find chunk in replCount");
-            return;
-        }
+        Store.instance().updateReplCount(chunkId, -1);
+        int newReplDegree = Store.instance().getReplCount().get(chunkId);
 
-        final int newReplDegree = currReplDegree - 1;
-        replCount.put(chunkId, newReplDegree);
-        System.out.println("Updated replication degree for chunk " + chunkId + ": " + newReplDegree);
-
-        if(!storedFiles.containsKey(chunkId)) {
-            System.out.println("Do not have chunk stored");
-            return;
-        }
+        if(!storedFiles.containsKey(chunkId)) return;
 
         final StoredChunkInfo stored = storedFiles.get(chunkId);
         if (newReplDegree < stored.getDesiredReplicationDegree()) {

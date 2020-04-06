@@ -20,7 +20,6 @@ public class Store {
         if(storeInstance == null){
             storeInstance = new Store();
         }
-
         return storeInstance;
     }
 
@@ -46,6 +45,15 @@ public class Store {
             total += entry.getValue().chunkSize;
         }
         return total;
+    }
+
+    public synchronized void updateReplCount(String chunkID, int inc) {
+        final Integer currReplDegree = replCount.getOrDefault(chunkID, 0);
+        int newReplDegree = currReplDegree + inc;
+        if (newReplDegree < 0) newReplDegree = 0;
+
+        replCount.put(chunkID, newReplDegree);
+        System.out.println("Updated replication count for chunk " + chunkID + ": " + newReplDegree);
     }
 
 }
