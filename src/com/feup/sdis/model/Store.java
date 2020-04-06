@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class Store {
     private static Store storeInstance;
-    final private SerializableHashMap replCount = new SerializableHashMap(Constants.peerFolderbase + "files.ser");
+    final private SerializableHashMap replCount = new SerializableHashMap(Constants.peerRootFolder + "files.ser");
     //TODO Check if this is the best approach
     final private SortedMap<String, BackupFileInfo> backedUpFiles = new TreeMap<>();
     final private SortedMap<String, StoredChunkInfo> storedFiles = new TreeMap<>();

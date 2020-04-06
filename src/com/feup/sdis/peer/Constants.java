@@ -1,7 +1,5 @@
 package com.feup.sdis.peer;
 
-import java.lang.management.ManagementFactory;
-
 public class Constants {
     private Constants() {} // no way to instantiate this class
     public static final String MC_CHANNEL = "224.0.0.0";
@@ -22,7 +20,14 @@ public class Constants {
     public static final int TCP_PORT = 8001;
     public static final int RMI_PORT = 1099;
     public static String SENDER_ID = "unknown";
-    public static String peerFolderbase = "unknown";
+    public static final String peerParentFolder = "peers/";
+    public static String peerRootFolder = "unknown";
     public static String backupFolder = "unknown";
     public static String restoredFolder = "unknown";
 }
+
+// TODO check max file size is okay
+// TODO verify if need to write as bytes instead of string
+// TODO check if works okay with multiple chunks
+// TODO send chunk of size 0 when size perfectly aligns
+// TODO check EOF bug sometimes happens

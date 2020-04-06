@@ -33,9 +33,9 @@ public class Peer {
             return;
         }
         Constants.SENDER_ID = args[0];
-        Constants.peerFolderbase = "peer-" + args[0] + "/";
-        Constants.backupFolder = Constants.peerFolderbase + "backups/";
-        Constants.restoredFolder = Constants.peerFolderbase + "restored/";
+        Constants.peerRootFolder = Constants.peerParentFolder + "peer-" + args[0] + "/";
+        Constants.backupFolder = Constants.peerRootFolder + "backups/";
+        Constants.restoredFolder = Constants.peerRootFolder + "restored/";
 
         BSDispatcher dispatcher = new BSDispatcher();
         try {
@@ -47,21 +47,29 @@ public class Peer {
             final Registry registry = LocateRegistry.getRegistry(Constants.RMI_PORT);
             registry.rebind(Constants.SENDER_ID, stub);
 
-            if(!(new File(Constants.peerFolderbase)).mkdir()){
-                System.out.println("Failed to create peer directory!");
-            }
-            if(!(new File(Constants.backupFolder)).mkdir()){
-                System.out.println("Failed to create backups directory!");
-            }
-            if(!(new File(Constants.restoredFolder)).mkdir()){
-                System.out.println("Failed to create restored directory!");
-            }
+            createPeerFolders();
             System.out.println("Peer " + Constants.SENDER_ID + " ready");
+
             new Thread(new ControlChannelReceiver()).start();
             new Thread(new DataBackupChannelReceiver()).start();
             new Thread(new DataRestoreChannelReceiver()).start();
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void createPeerFolders() {
+        if(!(new File(Constants.peerParentFolder)).mkdir()){
+            System.out.println("Failed to create peer directory!");
+        }
+        if(!(new File(Constants.peerRootFolder)).mkdir()){
+            System.out.println("Failed to create peer directory!");
+        }
+        if(!(new File(Constants.backupFolder)).mkdir()){
+            System.out.println("Failed to create backups directory!");
+        }
+        if(!(new File(Constants.restoredFolder)).mkdir()){
+            System.out.println("Failed to create restored directory!");
         }
     }
 }
