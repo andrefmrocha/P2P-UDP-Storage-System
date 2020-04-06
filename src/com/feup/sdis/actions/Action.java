@@ -8,7 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public interface Action {
-    static String generateId(String fileContent) {  // TODO: Check actual algorithm for file storage
+    static String generateId(String fileContent) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(fileContent.getBytes(StandardCharsets.UTF_8));

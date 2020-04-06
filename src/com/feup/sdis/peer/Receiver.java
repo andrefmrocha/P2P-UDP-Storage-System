@@ -34,7 +34,8 @@ public abstract class Receiver implements Runnable {
                 }
                 if (parts[2].equals(Constants.SENDER_ID)) continue; // drop packets from same peer
 
-                System.out.println("Received new message: " + msg);
+
+                System.out.println("\nReceived new message: " + msg.split("\\r?\\n")[0]);
                 pool.execute(()-> {
                     try {
                         MessageActor actor = this.parseMessage(msg);

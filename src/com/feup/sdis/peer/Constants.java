@@ -31,3 +31,4 @@ public class Constants {
 // TODO check if works okay with multiple chunks
 // TODO send chunk of size 0 when size perfectly aligns
 // TODO check EOF bug sometimes happens
+// TODO increase repl count when store own chunk
