@@ -49,7 +49,7 @@ public class Backup implements Action {
                     final Header header = new Header(Constants.version, PutChunk.type, senderId, fileId, chunkNo, this.replDeg);
                     final Message message = new Message(header, chunk);
                     final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
-                    final String chunkId =  message.getHeader().getChunkId();
+                    final String chunkId = message.getHeader().getChunkId();
                     System.out.println("Sending PUT_CHUNK for chunk " + chunkNo);
                     try {
                         socket.send(datagramPacket);
@@ -58,6 +58,7 @@ public class Backup implements Action {
                             try {
                                 Thread.sleep(1000);
                                 if(Store.instance().getReplCount().get(chunkId) >= this.replDeg) {
+                                    System.out.println("Desired replication degree achieved");
                                     break;
                                 }
                                 System.out.println("[" + (tries+1) + "/" + Constants.MAX_PUT_CHUNK_TRIES + "] Replication degree not achieved for chunk no " + chunkNo + " of file " + fileId + ", resending");

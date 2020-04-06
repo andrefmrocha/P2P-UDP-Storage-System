@@ -49,8 +49,8 @@ public class Removed extends MessageActor {
             int replDeg = stored.getDesiredReplicationDegree();
 
             try {
-                final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT); //TODO: Changes this to PUTCHUNK Channel
-                final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
+                final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT);
+                final InetAddress group = InetAddress.getByName(Constants.MDB_CHANNEL);
                 socket.joinGroup(group);
                 socket.setTimeToLive(Constants.MC_TTL);
                 socket.setSoTimeout(Constants.MC_TIMEOUT);
@@ -66,6 +66,7 @@ public class Removed extends MessageActor {
                         try {
                             Thread.sleep(random.nextInt(400 + 1));
                             if(replCount.get(chunkId) >= replDeg) {
+                                System.out.println("Desired replication degree achieved");
                                 break;
                             }
                             System.out.println("Sending PUT_CHUNK for chunk " + chunkId + ", attempt " + (tries+1) + "/" + Constants.MAX_PUT_CHUNK_TRIES);

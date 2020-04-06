@@ -21,6 +21,7 @@ public class PutChunk extends MessageActor {
     @Override
     public void process() throws IOException {
         final Header msgHeader = message.getHeader();
+        final String fileID = msgHeader.getFileId();
         final String chunkId = msgHeader.getChunkId();
         int chunkSize = message.getBody().length();
         Store store = Store.instance();
@@ -28,25 +29,19 @@ public class PutChunk extends MessageActor {
         int diskSpaceLimit = store.getMaxDiskSpace();
         int usedDiskSpace = store.getUsedDiskSpace();
         boolean fitsDisk = (diskSpaceLimit == Constants.unlimitedDiskSpace || (usedDiskSpace+chunkSize <= diskSpaceLimit));
-        if(!fitsDisk) {
-            System.out.println("No available disk space for chunk");
-            return;
-        }
 
         if(store.getStoredFiles().containsKey(chunkId)) {
             System.out.println("Already stored chunk " + chunkId);
             return;
         }
-
-        // store relevant information
-        String[] parts = chunkId.split(""+Constants.idSeparation);
-        if(parts.length != 2) {
-            System.out.println("Chunk ID malformed: " + chunkId);
+        if(!fitsDisk) {
+            System.out.println("No available disk space for chunk");
             return;
         }
-        String fileID = parts[0];
+
+        // store relevant information
         int desiredReplicationDegree = msgHeader.getReplicationDeg();
-        int chunkNo = Integer.parseInt(parts[1]);
+        int chunkNo = Integer.parseInt(msgHeader.getChunkNo());
         store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
 
         // update own replication count
@@ -62,7 +57,7 @@ public class PutChunk extends MessageActor {
         // send STORED message
         final Header sendingHeader = new Header(
                 Constants.version,
-                Stored .type, Constants.SENDER_ID,
+                Stored.type, Constants.SENDER_ID,
                 msgHeader.getFileId(), Integer.parseInt(msgHeader.getChunkNo()),
                 msgHeader.getReplicationDeg());
         final Message message = new Message(sendingHeader);
