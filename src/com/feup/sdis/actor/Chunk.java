@@ -27,9 +27,22 @@ public class Chunk extends MessageActor {
         final String fileID = message.getHeader().getFileId();
         final int chunkNo = Integer.parseInt(message.getHeader().getChunkNo());
         BackupFileInfo localInfo = Store.instance().getBackedUpFiles().get(fileID);
-        if (this.checkFile(localInfo) && this.checkChunk(localInfo, chunkNo))
-            storeFile(chunkContent, chunkNo, localInfo);
-        else System.out.println("Chunk already retrieved");
+        if(!isFileBackedUp(localInfo)) {
+            System.out.println("This peer was not the Restore initiator");
+            return;
+        }
+
+        if(localInfo.isFullyRestored()) {
+            System.out.println("File is already fully restored");
+            return;
+        }
+
+        if(isChunkRestored(localInfo, chunkNo)) {
+            System.out.println("Chunk " + chunkNo + " already restored");
+            return;
+        }
+
+        storeFile(chunkContent, chunkNo, localInfo);
     }
 
     protected void storeFile(String chunkContent, int chunkNo, BackupFileInfo localInfo) throws FileNotFoundException {
@@ -50,16 +63,12 @@ public class Chunk extends MessageActor {
         }
     }
 
-    protected boolean checkChunk(BackupFileInfo localInfo, int chunkNo) {
-        return !localInfo.getRestoredChunks().contains(chunkNo);
+    protected boolean isChunkRestored(BackupFileInfo localInfo, int chunkNo) {
+        return localInfo.getRestoredChunks().contains(chunkNo);
     }
 
-    protected boolean checkFile(BackupFileInfo localInfo) {
-        if (localInfo == null) {
-            System.out.println("Did not find backed up file info");
-            return false;
-        }
-        return true;
+    protected boolean isFileBackedUp(BackupFileInfo localInfo) {
+        return !(localInfo == null);
     }
 
     @Override

@@ -56,12 +56,9 @@ public class Restore implements Action {
                         for (int t = 0; t < MAX_GET_CHUNK_TRIES; t++) {
 
                             if (backupFileInfo.getRestoredChunks().contains(chunkN)) break;
-                            if (backupFileInfo.isFullyRestored()) {
-                                System.out.println("File " + fileID + " fully restored");
-                                break;
-                            }
+                            if (backupFileInfo.isFullyRestored()) break;
 
-                            System.out.println("Sending GET_CHUNK for chunk " + (chunkN+1) + "/" + MAX_GET_CHUNK_TRIES);
+                            System.out.println("Sending GET_CHUNK for chunk " + chunkN);
                             socket.send(datagramPacket);
                             Thread.sleep(1000);
                         }
