@@ -8,7 +8,7 @@ public class Constants {
     public static final int MC_PORT = 8080;
     public static final int MC_TTL = 1;
     public static final int MC_TIMEOUT = 3000;
-    public static final int packetSize = (int) (Math.pow(2, 8) + Math.pow(2, 3));
+    public static final int PACKET_HEADER_PADDING = 150;
     public static final String version = "1.0";
     public static final String enhancedVersion = "1.1";
     public static final int MAX_FILE_SIZE = 6400000;
@@ -26,10 +26,9 @@ public class Constants {
     public static String restoredFolder = "unknown";
 }
 
-// TODO check max file size is okay
 // TODO verify if need to write as bytes instead of string
-// TODO check if works okay with multiple chunks
 // TODO send chunk of size 0 when size perfectly aligns
 // TODO check EOF bug sometimes happens
-// TODO do not store chunk on initiator when backup protocol triggers from reclaim
 // TODO how to handle multiple backups of same file in different peers
+// TODO check thread safety on store TreeMaps. methods with synchronized for all operations??
+// TODO chunk with size 0 when size is multiple of CHUNK_SIZE

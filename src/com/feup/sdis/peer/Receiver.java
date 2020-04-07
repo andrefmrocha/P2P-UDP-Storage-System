@@ -21,7 +21,7 @@ public abstract class Receiver implements Runnable {
             final MulticastSocket socket = SocketFactory.buildMulticastSocket(getPort(), getChannel());
             final ExecutorService pool = Executors.newCachedThreadPool();
             while (true) {
-                byte[] buf = new byte[Constants.packetSize];
+                byte[] buf = new byte[Constants.BLOCK_SIZE + Constants.PACKET_HEADER_PADDING];
                 final DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
                 socket.receive(packet);

@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import static com.feup.sdis.peer.Constants.BLOCK_SIZE;
+import static com.feup.sdis.peer.Constants.backupFolder;
 
 public class Backup implements Action {
     private final File sendingFile;
@@ -58,7 +59,7 @@ public class Backup implements Action {
                             try {
                                 Thread.sleep(1000);
                                 if(Store.instance().getReplCount().get(chunkId) >= this.replDeg) {
-                                    System.out.println("Desired replication degree achieved");
+                                    System.out.println("Desired replication degree achieved for chunk " + chunkNo);
                                     break;
                                 }
                                 System.out.println("[" + (tries+1) + "/" + Constants.MAX_PUT_CHUNK_TRIES + "] Replication degree not achieved for chunk no " + chunkNo + " of file " + fileId + ", resending");

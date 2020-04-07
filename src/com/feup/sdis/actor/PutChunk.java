@@ -32,6 +32,7 @@ public class PutChunk extends MessageActor {
 
         if(store.getStoredFiles().containsKey(chunkId)) {
             System.out.println("Already stored chunk " + chunkId);
+            // TODO sent stored either way, replcounter should store origin
             return;
         }
         if(!fitsDisk) {
