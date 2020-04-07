@@ -9,10 +9,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 
 public class Restore implements Action {
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     private BackupFileInfo backupFileInfo;
 
     public Restore(String[] args) throws MessageError {
@@ -51,27 +56,25 @@ public class Restore implements Action {
                 final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
 
                 final int chunkN = i;
-                new Thread(() -> {
+                final AtomicInteger tries = new AtomicInteger();
+                scheduler.scheduleAtFixedRate(() -> {
+                    if (backupFileInfo.getRestoredChunks().contains(chunkN) || backupFileInfo.isFullyRestored() ||
+                        tries.get() >= MAX_GET_CHUNK_TRIES)
+                        throw new RuntimeException();
+
+                    tries.getAndIncrement();
                     try {
-                        for (int t = 0; t < MAX_GET_CHUNK_TRIES; t++) {
-
-                            if (backupFileInfo.getRestoredChunks().contains(chunkN)) break;
-                            if (backupFileInfo.isFullyRestored()) break;
-
-                            System.out.println("Sending GET_CHUNK for chunk " + chunkN);
-                            socket.send(datagramPacket);
-                            Thread.sleep(1000);
-                        }
-
-                    } catch (IOException | InterruptedException e) {
+                        System.out.println("Sending GET_CHUNK for chunk " + chunkN);
+                        socket.send(datagramPacket);
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }).start();
+                }, 1, 1, TimeUnit.SECONDS);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "Restored file";
+        return "Restored " + backupFileInfo.getOriginalFilename();
     }
 }

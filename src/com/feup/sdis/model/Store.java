@@ -1,10 +1,8 @@
 package com.feup.sdis.model;
 
-import java.util.*;
 import com.feup.sdis.peer.Constants;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Store {
     private static Store storeInstance;
@@ -46,14 +44,4 @@ public class Store {
         }
         return total;
     }
-
-    public synchronized void updateReplCount(String chunkID, int inc) {
-        final Integer currReplDegree = replCount.getOrDefault(chunkID, 0);
-        int newReplDegree = currReplDegree + inc;
-        if (newReplDegree < 0) newReplDegree = 0;
-
-        replCount.put(chunkID, newReplDegree);
-        System.out.println("Updated replication count for chunk " + chunkID + ": " + newReplDegree);
-    }
-
 }

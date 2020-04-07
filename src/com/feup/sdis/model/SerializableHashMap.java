@@ -2,11 +2,12 @@ package com.feup.sdis.model;
 
 import java.io.*;
 import java.util.Hashtable;
+import java.util.Set;
 
 public class SerializableHashMap {
 
     private ObjectOutputStream objectOutputStream;
-    private Hashtable<String, Integer> files = new Hashtable<>();
+    private Hashtable<String, Set<String>> files = new Hashtable<>();
 
     SerializableHashMap(String filename) {
         final File hashFile = new File(filename);
@@ -16,7 +17,7 @@ public class SerializableHashMap {
             else {
                 final FileInputStream file = new FileInputStream(filename);
                 final ObjectInputStream inputStream = new ObjectInputStream(file);
-                this.files = (Hashtable<String, Integer>) inputStream.readObject();
+                this.files = (Hashtable<String, Set<String>>) inputStream.readObject();
             }
 
             final FileOutputStream outputStream = new FileOutputStream(filename);
@@ -36,22 +37,22 @@ public class SerializableHashMap {
         }
     }
 
-    public synchronized Integer put(String s, Integer integer) {
-        final Integer returnValue = files.put(s, integer);
+    public synchronized Set<String> put(String s, Set<String> integer) {
+        final Set<String> returnValue = files.put(s, integer);
         this.updateObject();
         return returnValue;
     }
 
-    public synchronized Integer getOrDefault(String s, Integer integer) {
+    public synchronized Set<String> getOrDefault(String s, Set<String> integer) {
         return files.getOrDefault(s, integer);
     }
 
-    public synchronized Integer get(String s) {
+    public synchronized Set<String> get(String s) {
         return files.get(s);
     }
 
-    public synchronized Integer remove(String s) {
-        final Integer returnValue = files.remove(s);
+    public synchronized Set<String> remove(String s) {
+        final Set<String> returnValue = files.remove(s);
         this.updateObject();
         return returnValue;
     }

@@ -37,8 +37,8 @@ public class Reclaim implements Action {
             if (usedSize > maxDiskSpace) {
                 // Must remove
                 try {
-                    final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT); //TODO: Changes this to MDR Channel
-                    final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
+                    final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT);
+                    final InetAddress group = InetAddress.getByName(Constants.MDR_CHANNEL);
                     socket.joinGroup(group);
                     socket.setTimeToLive(Constants.MC_TTL);
                     socket.setSoTimeout(Constants.MC_TIMEOUT);
@@ -60,7 +60,8 @@ public class Reclaim implements Action {
                         System.out.println("Failed to delete chunk " + chunkID);
                     }
                     storedFiles.remove(chunkID);
-                    Store.instance().updateReplCount(chunkID, -1);
+                    //Store.instance().updateReplCount(chunkID, -1);
+                    // TODO update replication count (remove this peer from list)
 
                 } catch (IOException e) {
                     e.printStackTrace();

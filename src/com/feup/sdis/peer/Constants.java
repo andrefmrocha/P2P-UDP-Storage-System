@@ -1,6 +1,8 @@
 package com.feup.sdis.peer;
 
 public class Constants {
+    public static final int MAX_DELETE_TRIES = 10; //TODO: Check these Magic Numbers
+    public static final int DELETE_INTERVAL = 30;
     private Constants() {} // no way to instantiate this class
     public static final String MC_CHANNEL = "224.0.0.0";
     public static final String MDB_CHANNEL = "224.0.0.1";

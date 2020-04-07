@@ -47,8 +47,9 @@ public class PutChunk extends MessageActor {
 
         // update own replication count
         final SerializableHashMap replCounter = Store.instance().getReplCount();
-        final Integer currentReplications = replCounter.getOrDefault(chunkId, 0);
-        replCounter.put(chunkId, currentReplications + 1);
+        //final Integer currentReplications = replCounter.getOrDefault(chunkId, 0);
+        //replCounter.put(chunkId, currentReplications + 1);
+        // TODO update replication count (add this peer id to list)
 
         // write chunk to disk
         PrintWriter fileOutputStream = new PrintWriter(Constants.backupFolder + chunkId);
