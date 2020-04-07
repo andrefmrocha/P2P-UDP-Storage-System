@@ -1,24 +1,19 @@
 package com.feup.sdis.actor;
 
 import com.feup.sdis.actions.Backup;
-import com.feup.sdis.model.*;
+import com.feup.sdis.model.Message;
+import com.feup.sdis.model.SerializableHashMap;
+import com.feup.sdis.model.Store;
+import com.feup.sdis.model.StoredChunkInfo;
 import com.feup.sdis.peer.Constants;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Removed extends MessageActor {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
@@ -44,7 +39,7 @@ public class Removed extends MessageActor {
         // update repl count on all peers
         final SerializableHashMap replCount = Store.instance().getReplCount();
         final Set<String> currReplDegree = replCount.get(chunkId);
-        if (currReplDegree == null) {
+        if(currReplDegree == null) {
             System.out.println("[REMOVED] Did not find chunk in replCount");
             return;
         }

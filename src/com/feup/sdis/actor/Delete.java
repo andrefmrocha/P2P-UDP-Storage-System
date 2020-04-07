@@ -1,5 +1,6 @@
 package com.feup.sdis.actor;
 
+import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.model.Store;
 import com.feup.sdis.model.StoredChunkInfo;
@@ -34,6 +35,18 @@ public class Delete extends MessageActor {
                     System.out.println("Failed to delete chunk " + chunkId);
                 }
                 storedFiles.remove(chunkId);
+                if(message.getHeader().getVersion().equals(Constants.enhancedVersion)){
+                    final Header msgHeader = message.getHeader();
+                    final Header sendingHeader = new Header(
+                            Constants.enhancedVersion,
+                            Deleted.type, Constants.SENDER_ID,
+                            msgHeader.getFileId(), Integer.parseInt(msgHeader.getChunkNo()),
+                            msgHeader.getReplicationDeg());
+
+                    final Message message = new Message(sendingHeader);
+                    this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, message);
+                }
+
                 Store.instance().getReplCount().remove(chunkId);
             }
         }
