@@ -36,8 +36,8 @@ public class Reclaim implements Action {
             if (usedSize > maxDiskSpace) {
                 // Must remove
                 try {
-                    final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT); //TODO: Changes this to MDR Channel
-                    final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
+                    final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT);
+                    final InetAddress group = InetAddress.getByName(Constants.MDR_CHANNEL);
                     socket.joinGroup(group);
                     socket.setTimeToLive(Constants.MC_TTL);
                     socket.setSoTimeout(Constants.MC_TIMEOUT);

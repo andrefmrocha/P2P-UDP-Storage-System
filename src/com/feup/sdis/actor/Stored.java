@@ -4,6 +4,9 @@ import com.feup.sdis.model.Message;
 import com.feup.sdis.model.SerializableHashMap;
 import com.feup.sdis.model.Store;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Stored extends MessageActor {
     final static public String type = "STORED";
 
@@ -20,9 +23,12 @@ public class Stored extends MessageActor {
     public void process() {
         final String chunkId = message.getHeader().getChunkId();
         final SerializableHashMap replCounter = Store.instance().getReplCount();
-        final Integer currentReplications =
-                replCounter.getOrDefault(chunkId, 0);
-        replCounter.put(chunkId, currentReplications + 1);
+        final Set<String> currentReplications =
+                replCounter.getOrDefault(chunkId, new HashSet<>());
+        if (!currentReplications.contains(message.getHeader().getSenderId())){
+            currentReplications.add(message.getHeader().getSenderId());
+            replCounter.put(chunkId, currentReplications);
+        }
     }
 
 
