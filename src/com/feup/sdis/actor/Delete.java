@@ -38,7 +38,7 @@ public class Delete extends MessageActor {
                 if(message.getHeader().getVersion().equals(Constants.enhancedVersion)){
                     final Header msgHeader = message.getHeader();
                     final Header sendingHeader = new Header(
-                            Constants.version,
+                            Constants.enhancedVersion,
                             Deleted.type, Constants.SENDER_ID,
                             msgHeader.getFileId(), Integer.parseInt(msgHeader.getChunkNo()),
                             msgHeader.getReplicationDeg());
