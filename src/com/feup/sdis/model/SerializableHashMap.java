@@ -1,13 +1,13 @@
 package com.feup.sdis.model;
 
 import java.io.*;
-import java.util.Hashtable;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SerializableHashMap {
 
     private ObjectOutputStream objectOutputStream;
-    private Hashtable<String, Set<String>> files = new Hashtable<>();
+    private Map<String, Set<String>> files = new ConcurrentHashMap<>();
 
     SerializableHashMap(String filename) {
         final File hashFile = new File(filename);
@@ -17,7 +17,7 @@ public class SerializableHashMap {
             else {
                 final FileInputStream file = new FileInputStream(filename);
                 final ObjectInputStream inputStream = new ObjectInputStream(file);
-                this.files = (Hashtable<String, Set<String>>) inputStream.readObject();
+                this.files = (ConcurrentHashMap<String, Set<String>>) inputStream.readObject();
             }
 
             final FileOutputStream outputStream = new FileOutputStream(filename);
@@ -43,8 +43,8 @@ public class SerializableHashMap {
         return returnValue;
     }
 
-    public synchronized Set<String> getOrDefault(String s, Set<String> integer) {
-        return files.getOrDefault(s, integer);
+    public synchronized Set<String> getOrDefault(String s, Set<String> set) {
+        return files.getOrDefault(s, Collections.synchronizedSet(set));
     }
 
     public synchronized Set<String> get(String s) {

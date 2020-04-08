@@ -46,7 +46,7 @@ public class Reclaim implements Action {
                     final String fileID = chunkInfo.getFileID();
                     final String senderId = Constants.SENDER_ID;
                     final int chunkNo = chunkInfo.getChunkNo();
-                    System.out.println("Reached max disk space, sending REMOVED msg for file " + fileID);
+                    System.out.println("Reached max disk space, sending REMOVED msg for file " + chunkID);
 
                     // Send Removed message
                     final Header header = new Header(Constants.version, Removed.type, senderId, fileID, chunkNo);
@@ -60,7 +60,7 @@ public class Reclaim implements Action {
                         System.out.println("Failed to delete chunk " + chunkID);
                     }
                     storedFiles.remove(chunkID);
-                    //Store.instance().updateReplCount(chunkID, -1);
+                    Store.instance().getReplCount().get(chunkID).remove(Constants.SENDER_ID);
                     // TODO update replication count (remove this peer from list)
 
                 } catch (IOException e) {

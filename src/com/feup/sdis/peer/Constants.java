@@ -2,7 +2,7 @@ package com.feup.sdis.peer;
 
 public class Constants {
     public static final int MAX_DELETE_TRIES = 10; //TODO: Check these Magic Numbers
-    public static final int DELETE_INTERVAL = 30;
+    public static final int DELETE_INTERVAL = 1;
     private Constants() {} // no way to instantiate this class
     public static final String MC_CHANNEL = "224.0.0.0";
     public static final String MDB_CHANNEL = "224.0.0.1";
@@ -32,5 +32,3 @@ public class Constants {
 // TODO send chunk of size 0 when size perfectly aligns
 // TODO check EOF bug sometimes happens
 // TODO how to handle multiple backups of same file in different peers
-// TODO check thread safety on store TreeMaps. methods with synchronized for all operations??
-// TODO chunk with size 0 when size is multiple of CHUNK_SIZE
