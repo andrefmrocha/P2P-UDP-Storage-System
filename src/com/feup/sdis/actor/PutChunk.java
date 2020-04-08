@@ -54,7 +54,6 @@ public class PutChunk extends MessageActor {
         final SerializableHashMap replCounter = Store.instance().getReplCount();
         replCounter.getOrDefault(chunkId, new HashSet<>()).add(Constants.SENDER_ID);
 
-        System.out.println("Chunk " + chunkNo + " has size " + message.getBody().length);
         // write chunk to disk
         try (FileOutputStream fos = new FileOutputStream(Constants.backupFolder + chunkId)) {
             fos.write(message.getBody());

@@ -96,7 +96,6 @@ public class Backup implements Action {
         final String senderId = Constants.SENDER_ID;
         for (int i = 0; i < numChunks; i++) {
             final byte[] chunk = Arrays.copyOfRange(fileContent, BLOCK_SIZE * i, Math.min(BLOCK_SIZE * (i + 1), fileContent.length));
-            System.out.println("Chunk " + i + " has size " + chunk.length);
             final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version
                     , PutChunk.type, senderId, fileId, i, replDeg);
             final Message message = new Message(header, chunk);
