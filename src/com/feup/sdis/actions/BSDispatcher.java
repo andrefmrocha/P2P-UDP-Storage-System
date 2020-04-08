@@ -7,7 +7,7 @@ public class BSDispatcher implements Dispatcher {
     public String processMsg(String msg) throws MessageError {
         final String[] args = msg.split(",");
         Action action;
-        System.out.println(msg);
+        System.out.println("\nReceived client request: " + msg);
         switch (args[0]){
             case "BACKUP":
                 action = new Backup(args);

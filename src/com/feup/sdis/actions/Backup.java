@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,26 +29,36 @@ class Task implements Runnable {
     private final DatagramPacket datagramPacket;
     private final MulticastSocket socket;
     private final ScheduledExecutorService scheduler;
+    private final int chunkNo;
 
     public Task(int tries, String chunkId, int replDeg,
-                DatagramPacket datagramPacket, MulticastSocket socket, ScheduledExecutorService scheduler) {
+                DatagramPacket datagramPacket, MulticastSocket socket, ScheduledExecutorService scheduler, int chunkNo) {
         this.tries = tries;
         this.chunkId = chunkId;
         this.replDeg = replDeg;
         this.datagramPacket = datagramPacket;
         this.socket = socket;
         this.scheduler = scheduler;
+        this.chunkNo = chunkNo;
     }
 
     @Override
     public void run() {
         if (Store.instance().getReplCount().getOrDefault(chunkId, new HashSet<>()).size() >= replDeg) {
+            System.out.println("Desired replication degree for chunk " + chunkNo + " achieved");
+            throw new RuntimeException();
+        }
+
+        if (tries >= Constants.MAX_PUT_CHUNK_TRIES) {
+            System.out.println("Max attempts for PUT_CHUNK of chunk " + chunkNo + " achieved");
             throw new RuntimeException();
         }
 
         tries++;
 
         try {
+            System.out.println("Sending PUT_CHUNK for chunk " + chunkNo + ", attempt " + (tries + 1) + "/" + Constants.MAX_PUT_CHUNK_TRIES);
+
             socket.send(datagramPacket);
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,7 +66,7 @@ class Task implements Runnable {
 
         if (tries < Constants.MAX_PUT_CHUNK_TRIES) {
             scheduler.schedule(
-                    new Task(tries, chunkId, replDeg, datagramPacket, socket, scheduler),
+                    new Task(tries, chunkId, replDeg, datagramPacket, socket, scheduler, chunkNo),
                     tries == 1 ? 1 : (tries - 1) * 2, TimeUnit.SECONDS);
         }
     }
@@ -86,12 +97,12 @@ public class Backup implements Action {
             final String chunk = fileContent.substring(
                     BLOCK_SIZE * i, Math.min(BLOCK_SIZE * (i + 1), fileContent.length()));
             final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version
-            , PutChunk.type, senderId, fileId, i, replDeg);
+                    , PutChunk.type, senderId, fileId, i, replDeg);
             final Message message = new Message(header, chunk);
             final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
             final String chunkId = message.getHeader().getChunkId();
             scheduler.schedule(
-                    new Task(0, chunkId, replDeg, datagramPacket, socket, scheduler), 1, TimeUnit.SECONDS);
+                    new Task(0, chunkId, replDeg, datagramPacket, socket, scheduler, i), 1, TimeUnit.SECONDS);
         }
         return fileContent;
     }
@@ -113,6 +124,5 @@ public class Backup implements Action {
             e.printStackTrace();
         }
         return "Stored file";
-        // TODO do not allow store if max disk space is reached
     }
 }

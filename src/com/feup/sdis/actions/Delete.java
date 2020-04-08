@@ -32,6 +32,7 @@ public class Delete implements Action {
 
     @Override
     public String process() {
+        System.out.println("Starting delete protocol");
         if (!file.exists()) {
             return "Failed to find file!";
         }
@@ -57,13 +58,25 @@ public class Delete implements Action {
                     Constants.SENDER_ID, fileID);
 
             final Message msg = new Message(header);
+
             final AtomicInteger tries = new AtomicInteger();
             scheduler.scheduleAtFixedRate(() -> {
-                if (    Peer.enhanced &&
-                        (tries.get() >= Constants.MAX_DELETE_TRIES || this.checkReplications(fileID, numChunks)))
+                if (Peer.enhanced) {
+                    if (tries.get() >= Constants.MAX_DELETE_TRIES) {
+                        System.out.println("Maximum DELETE tries achieved, file " + fileID + " couldn't be completely removed");
+                        throw new RuntimeException();
+                    }
+                    if (this.checkReplications(fileID, numChunks)) {
+                        System.out.println("File " + fileID + " successfully deleted");
+                        throw new RuntimeException();
+                    }
+                }
+
+                if (!Peer.enhanced && tries.get() == 1)
                     throw new RuntimeException();
 
                 try {
+                    System.out.println("Sending DELETE message for file " + fileID);
                     socket.send(msg.generatePacket(group, Constants.MC_PORT));
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -75,7 +88,7 @@ public class Delete implements Action {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "Deleted successfully";
+        return "Deleted file";
     }
 
     private boolean checkReplications(String fileID, int numChunks) {

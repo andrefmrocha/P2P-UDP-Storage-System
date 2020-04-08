@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 public class Store {
     private static Store storeInstance;
-    final private SerializableHashMap replCount = new SerializableHashMap(Constants.SENDER_ID + "/" + "files.ser");
+    final private SerializableHashMap replCount = new SerializableHashMap(Constants.peerRootFolder + "files.ser");
     //TODO Check if this is the best approach
     final private SortedMap<String, BackupFileInfo> backedUpFiles = new TreeMap<>();
     final private SortedMap<String, StoredChunkInfo> storedFiles = new TreeMap<>();
@@ -20,7 +20,6 @@ public class Store {
         if(storeInstance == null){
             storeInstance = new Store();
         }
-
         return storeInstance;
     }
 
@@ -47,5 +46,4 @@ public class Store {
         }
         return total;
     }
-
 }

@@ -23,6 +23,7 @@ public class Reclaim implements Action {
 
     @Override
     public String process() {
+        System.out.println("Starting reclaim protocol");
         int maxDiskSpace = Store.instance().getMaxDiskSpace();
         int usedSize = 0;
 
@@ -45,6 +46,7 @@ public class Reclaim implements Action {
                     final String fileID = chunkInfo.getFileID();
                     final String senderId = Constants.SENDER_ID;
                     final int chunkNo = chunkInfo.getChunkNo();
+                    System.out.println("Reached max disk space, sending REMOVED msg for file " + fileID);
 
                     // Send Removed message
                     final Header header = new Header(Constants.version, Removed.type, senderId, fileID, chunkNo);
@@ -53,11 +55,14 @@ public class Reclaim implements Action {
                     socket.send(datagramPacket);
 
                     // Delete stored chunk
-                    final File file = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkID);
+                    final File file = new File(Constants.backupFolder + chunkID);
                     if(!file.delete()){
                         System.out.println("Failed to delete chunk " + chunkID);
                     }
                     storedFiles.remove(chunkID);
+                    //Store.instance().updateReplCount(chunkID, -1);
+                    // TODO update replication count (remove this peer from list)
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

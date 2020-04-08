@@ -9,6 +9,9 @@ import com.feup.sdis.peer.Constants;
 import java.util.HashSet;
 import java.util.Set;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Stored extends MessageActor {
     final static public String type = "STORED";
 
@@ -24,6 +27,7 @@ public class Stored extends MessageActor {
     @Override
     public void process() {
         final String chunkId = message.getHeader().getChunkId();
+        final String senderPeerId = message.getHeader().getSenderId();
         final SerializableHashMap replCounter = Store.instance().getReplCount();
         final Set<String> currentReplications =
                 replCounter.getOrDefault(chunkId, new HashSet<>());
@@ -33,7 +37,8 @@ public class Stored extends MessageActor {
                     currentReplications.size() > message.getHeader().getReplicationDeg())
                 this.removeExcess();
             else {
-                currentReplications.add(message.getHeader().getSenderId());
+                System.out.println("Updated replication table for chunk " + chunkId + ", added peer " + senderPeerId);
+                currentReplications.add(senderPeerId);
                 replCounter.put(chunkId, currentReplications);
             }
 

@@ -1,9 +1,6 @@
 package com.feup.sdis.actor;
 
-import com.feup.sdis.model.Header;
-import com.feup.sdis.model.Message;
-import com.feup.sdis.model.Store;
-import com.feup.sdis.model.StoredChunkInfo;
+import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 
 import java.io.IOException;
@@ -25,6 +22,7 @@ public class PutChunk extends MessageActor {
     @Override
     public void process() throws IOException {
         final Header msgHeader = message.getHeader();
+        final String fileID = msgHeader.getFileId();
         final String chunkId = msgHeader.getChunkId();
         int chunkSize = message.getBody().length();
         Store store = Store.instance();
@@ -32,28 +30,30 @@ public class PutChunk extends MessageActor {
         int diskSpaceLimit = store.getMaxDiskSpace();
         int usedDiskSpace = store.getUsedDiskSpace();
         boolean fitsDisk = (diskSpaceLimit == Constants.unlimitedDiskSpace || (usedDiskSpace + chunkSize <= diskSpaceLimit));
-        if (!store.getStoredFiles().containsKey(chunkId)) {
-            if (fitsDisk && this.checkReplDegree(chunkId, msgHeader)) {
-                // store relevant information
-                String[] parts = chunkId.split("" + Constants.idSeparation);
-                if (parts.length != 2) {
-                    System.out.println("Chunk ID malformed: " + chunkId);
-                    return;
-                }
-                String fileID = parts[0];
-                int desiredReplicationDegree = msgHeader.getReplicationDeg();
-                int chunkNo = Integer.parseInt(parts[1]);
-                store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
-
-                PrintWriter fileOutputStream = new PrintWriter(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
-                fileOutputStream.write(message.getBody());
-                fileOutputStream.close();
-                this.sendStored(msgHeader);
-
-            }
-        } else {
+        if (store.getStoredFiles().containsKey(chunkId)) {
+            System.out.println("Already stored chunk " + chunkId);
             this.sendStored(msgHeader);
+            return;
         }
+        if (!fitsDisk) {
+            System.out.println("No available disk space for chunk");
+            return;
+        }
+
+        // store relevant information
+        int desiredReplicationDegree = msgHeader.getReplicationDeg();
+        int chunkNo = Integer.parseInt(msgHeader.getChunkNo());
+        store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
+
+        // update own replication count
+        final SerializableHashMap replCounter = Store.instance().getReplCount();
+        replCounter.getOrDefault(chunkId, new HashSet<>()).add(Constants.SENDER_ID);
+
+        // write chunk to disk
+        PrintWriter fileOutputStream = new PrintWriter(Constants.backupFolder + chunkId);
+        fileOutputStream.write(message.getBody());
+        fileOutputStream.close();
+        this.sendStored(msgHeader);
 
     }
 
@@ -69,8 +69,8 @@ public class PutChunk extends MessageActor {
                 Stored.type, Constants.SENDER_ID,
                 msgHeader.getFileId(), Integer.parseInt(msgHeader.getChunkNo()),
                 msgHeader.getReplicationDeg());
-
         final Message message = new Message(sendingHeader);
+        System.out.println("Stored chunk " + msgHeader.getChunkId() + ", sending STORED msg");
         this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, message);
     }
 
