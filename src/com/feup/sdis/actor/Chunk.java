@@ -5,9 +5,7 @@ import com.feup.sdis.model.Message;
 import com.feup.sdis.model.Store;
 import com.feup.sdis.peer.Constants;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 public class Chunk extends MessageActor {
     final static public String type = "CHUNK";
@@ -23,7 +21,7 @@ public class Chunk extends MessageActor {
 
     @Override
     public void process() throws IOException {
-        final String chunkContent = message.getBody();
+        final byte[] chunkContent = message.getBody();
         final String fileID = message.getHeader().getFileId();
         final int chunkNo = Integer.parseInt(message.getHeader().getChunkNo());
         BackupFileInfo localInfo = Store.instance().getBackedUpFiles().get(fileID);
@@ -45,26 +43,25 @@ public class Chunk extends MessageActor {
         storeFile(chunkContent, chunkNo, localInfo);
     }
 
-    protected void storeFile(String chunkContent, int chunkNo, BackupFileInfo localInfo) throws FileNotFoundException {
+    protected void storeFile(byte[] chunkContent, int chunkNo, BackupFileInfo localInfo) throws IOException {
         String fileID = localInfo.getfileID();
         System.out.println("Storing chunk no. " + chunkNo + " for file " + fileID);
         localInfo.getRestoredChunks().put(chunkNo, chunkContent);
 
         if ( localInfo.isFullyRestored()) {
             System.out.println("File " + fileID + " fully restored, writing to disk as " + localInfo.getOriginalFilename());
-            StringBuilder fileContent = new StringBuilder();
-            for (String chunk : localInfo.getRestoredChunks().values())
-                fileContent.append(chunk);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+            for (byte[] chunk : localInfo.getRestoredChunks().values())
+                outputStream.write(chunk);
 
-            PrintWriter fileOutputStream = new PrintWriter(Constants.restoredFolder + localInfo.getOriginalFilename());
-            fileOutputStream.println(fileContent.toString());
-            fileOutputStream.flush();
-            fileOutputStream.close();
+            try (FileOutputStream fos = new FileOutputStream(Constants.restoredFolder + localInfo.getOriginalFilename())) {
+                fos.write(outputStream.toByteArray());
+            }
         }
     }
 
     protected boolean isChunkRestored(BackupFileInfo localInfo, int chunkNo) {
-        return localInfo.getRestoredChunks().contains(chunkNo);
+        return localInfo.getRestoredChunks().get(chunkNo) != null;
     }
 
     protected boolean isFileBackedUp(BackupFileInfo localInfo) {

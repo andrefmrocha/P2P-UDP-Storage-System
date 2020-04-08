@@ -40,9 +40,9 @@ public class Delete implements Action {
         try {
             final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
             final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
-            final String fileContent = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+            final byte[] fileContent = Files.readAllBytes(file.toPath());
             final String fileID = Action.generateId(fileContent, file.lastModified());
-            final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE);
+            final int numChunks = (int) Math.ceil(fileContent.length / (double) BLOCK_SIZE);
 
             // remove store info
             Store.instance().getBackedUpFiles().remove(fileID);
