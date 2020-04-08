@@ -25,6 +25,14 @@ public class PutChunk extends MessageActor {
         final Header msgHeader = message.getHeader();
         final String fileID = msgHeader.getFileId();
         final String chunkId = msgHeader.getChunkId();
+        int chunkNo = Integer.parseInt(msgHeader.getChunkNo());
+
+        if(message.getBody().length == 0){
+            System.out.println("Chunk number " + chunkNo + " of file " + fileID + " has an empty body. Exiting.");
+            return;
+        }
+
+
         int chunkSize = message.getBody().length;
         Store store = Store.instance();
 
@@ -47,7 +55,6 @@ public class PutChunk extends MessageActor {
 
         // store relevant information
         int desiredReplicationDegree = msgHeader.getReplicationDeg();
-        int chunkNo = Integer.parseInt(msgHeader.getChunkNo());
         store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
 
         // update own replication count

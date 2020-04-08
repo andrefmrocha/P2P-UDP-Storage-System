@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.feup.sdis.peer.Constants.BLOCK_SIZE;
+import static com.feup.sdis.peer.Constants.MAX_PUT_CHUNK_TRIES;
 
 
 class Task implements Runnable {
@@ -87,7 +88,8 @@ public class Backup implements Action {
         final InetAddress group = InetAddress.getByName(Constants.MDB_CHANNEL);
         final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
         final byte[] fileContent = Files.readAllBytes(sendingFile.toPath());
-        final int numChunks = (int) Math.ceil(fileContent.length / (double) BLOCK_SIZE);
+        final double division = fileContent.length / (double) BLOCK_SIZE;
+        final int numChunks = (int) Math.ceil(division);
         final String fileId = Action.generateId(fileContent, sendingFile.lastModified());
         final String senderId = Constants.SENDER_ID;
         for (int i = 0; i < numChunks; i++) {
@@ -100,7 +102,21 @@ public class Backup implements Action {
             scheduler.schedule(
                     new Task(0, chunkId, replDeg, datagramPacket, socket, scheduler, i), 1, TimeUnit.SECONDS);
         }
+
+        if(division == numChunks){
+            System.out.println("File size is multiple of chunk size, sending chunk of size 0");
+            final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version
+                    , PutChunk.type, senderId, fileId, numChunks, replDeg);
+            final Message message = new Message(header, new byte[0]);
+            final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
+            socket.send(datagramPacket);
+        }
+
         return fileContent;
+    }
+
+    private static void sendChunk(int replDeg, ScheduledExecutorService scheduler, InetAddress group, MulticastSocket socket, String fileId, String senderId, int i, byte[] chunk) {
+
     }
 
     @Override

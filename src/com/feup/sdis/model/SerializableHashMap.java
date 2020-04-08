@@ -33,7 +33,6 @@ public class SerializableHashMap {
                 e.printStackTrace();
             }
         }
-        System.out.println("Current hashmap size: " + this.files.size());
     }
 
     private synchronized void updateObject(){

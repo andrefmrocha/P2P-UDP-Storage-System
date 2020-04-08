@@ -28,7 +28,4 @@ public class Constants {
     public static String restoredFolder = "unknown";
 }
 
-// TODO verify if need to write as bytes instead of string
-// TODO send chunk of size 0 when size perfectly aligns
-// TODO check EOF bug sometimes happens
 // TODO how to handle multiple backups of same file in different peers

@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class Store {
     private static Store storeInstance;
     final private SerializableHashMap replCount = new SerializableHashMap(Constants.peerRootFolder + "files.ser");
-    //TODO Check if this is the best approach
     final private SortedMap<String, BackupFileInfo> backedUpFiles = new ConcurrentSkipListMap<>();
     final private SortedMap<String, StoredChunkInfo> storedFiles = new ConcurrentSkipListMap<>();
     final private Set<String> chunksSent = Collections.synchronizedSet(new HashSet<>());
