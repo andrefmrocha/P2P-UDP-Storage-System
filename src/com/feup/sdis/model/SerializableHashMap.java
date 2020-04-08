@@ -37,23 +37,39 @@ public class SerializableHashMap {
         }
     }
 
-    public synchronized Set<String> put(String s, Set<String> integer) {
-        final Set<String> returnValue = files.put(s, integer);
-        this.updateObject();
-        return returnValue;
-    }
-
-    public synchronized Set<String> getOrDefault(String s, Set<String> set) {
+    private synchronized Set<String> getOrDefault(String s, Set<String> set) {
         return files.getOrDefault(s, Collections.synchronizedSet(set));
     }
 
-    public synchronized Set<String> get(String s) {
-        return files.get(s);
-    }
-
-    public synchronized Set<String> remove(String s) {
+    private synchronized Set<String> remove(String s) {
         final Set<String> returnValue = files.remove(s);
         this.updateObject();
         return returnValue;
+    }
+
+    public synchronized int getSize(String key){
+        return this.getOrDefault(key, new HashSet<>()).size();
+    }
+
+    public synchronized void removeChunkInfo(String key){
+        this.remove(key);
+    }
+
+    public synchronized void addNewID(String key, String peerId){
+        this.getOrDefault(key, new HashSet<>()).add(peerId);
+        this.updateObject();
+    }
+
+    public synchronized void removeID(String key, String peerId){
+        this.getOrDefault(key, new HashSet<>()).add(peerId);
+        this.updateObject();
+    }
+
+    public synchronized boolean contains(String key){
+        return this.files.containsKey(key);
+    }
+
+    public synchronized boolean containsPeer(String key, String peerId){
+        return this.getOrDefault(key, new HashSet<>()).contains(peerId);
     }
 }

@@ -29,17 +29,14 @@ public class Stored extends MessageActor {
         final String chunkId = message.getHeader().getChunkId();
         final String senderPeerId = message.getHeader().getSenderId();
         final SerializableHashMap replCounter = Store.instance().getReplCount();
-        final Set<String> currentReplications =
-                replCounter.getOrDefault(chunkId, new HashSet<>());
-        if (!currentReplications.contains(message.getHeader().getSenderId())) {
+        if (Store.instance().getReplCount().containsPeer(chunkId, senderPeerId)) {
             if (message.getHeader().getVersion().equals(Constants.enhancedVersion) &&
                     Store.instance().getBackedUpFiles().get(message.getHeader().getFileId()) != null &&
-                    currentReplications.size() >= message.getHeader().getReplicationDeg())
+                    Store.instance().getReplCount().getSize(chunkId) >= message.getHeader().getReplicationDeg())
                 this.removeExcess(senderPeerId);
             else {
                 System.out.println("Updated replication table for chunk " + chunkId + ", added peer " + senderPeerId);
-                currentReplications.add(senderPeerId);
-                replCounter.put(chunkId, currentReplications);
+                Store.instance().getReplCount().addNewID(chunkId, senderPeerId);
             }
 
         }

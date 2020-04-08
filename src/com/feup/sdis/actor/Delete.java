@@ -48,7 +48,7 @@ public class Delete extends MessageActor {
                     this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, message);
                 }
 
-                Store.instance().getReplCount().remove(chunkId);
+                Store.instance().getReplCount().removeChunkInfo(chunkId);
             }
         }
 

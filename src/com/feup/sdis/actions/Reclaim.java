@@ -60,7 +60,7 @@ public class Reclaim implements Action {
                         System.out.println("Failed to delete chunk " + chunkID);
                     }
                     storedFiles.remove(chunkID);
-                    Store.instance().getReplCount().get(chunkID).remove(Constants.SENDER_ID);
+                    Store.instance().getReplCount().removeID(chunkID, Constants.SENDER_ID);
                     // TODO update replication count (remove this peer from list)
 
                 } catch (IOException e) {

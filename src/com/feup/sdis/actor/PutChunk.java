@@ -51,7 +51,7 @@ public class PutChunk extends MessageActor {
 
         // update own replication count
         final SerializableHashMap replCounter = Store.instance().getReplCount();
-        replCounter.getOrDefault(chunkId, new HashSet<>()).add(Constants.SENDER_ID);
+        replCounter.addNewID(chunkId, Constants.SENDER_ID);
 
         // write chunk to disk
         PrintWriter fileOutputStream = new PrintWriter(Constants.backupFolder + chunkId);
@@ -64,7 +64,7 @@ public class PutChunk extends MessageActor {
     private boolean checkReplDegree(String chunkId, Header msgHeader) {
         return msgHeader.getVersion().equals(Constants.version) ||
                 (msgHeader.getVersion().equals(Constants.enhancedVersion)
-                        && Store.instance().getReplCount().getOrDefault(chunkId, new HashSet<>()).size() < msgHeader.getReplicationDeg());
+                        && Store.instance().getReplCount().getSize(chunkId) < msgHeader.getReplicationDeg());
     }
 
     private void sendStored(Header msgHeader) {

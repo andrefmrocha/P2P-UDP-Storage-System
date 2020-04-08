@@ -46,9 +46,9 @@ public class Delete implements Action {
 
             // remove store info
             Store.instance().getBackedUpFiles().remove(fileID);
-            if (!Peer.enhanced){
+            if (!Peer.enhanced) {
                 for (int chunkNo = 0; chunkNo < numChunks; chunkNo++) {
-                    Store.instance().getReplCount().remove(fileID + Constants.idSeparation + chunkNo);
+                    Store.instance().getReplCount().removeChunkInfo(fileID + Constants.idSeparation + chunkNo);
                 }
             }
 
@@ -94,9 +94,8 @@ public class Delete implements Action {
     private boolean checkReplications(String fileID, int numChunks) {
         boolean allDeleted = true;
         for (int chunkNo = 0; chunkNo < numChunks; chunkNo++) {
-            Set<String> replCount = Store.instance().getReplCount().getOrDefault(
-                    fileID + Constants.idSeparation + chunkNo, new HashSet<>());
-            if(replCount.size() > 0){
+            if (Store.instance().getReplCount()
+                    .getSize(fileID + Constants.idSeparation + chunkNo) > 0) {
                 allDeleted = false;
                 break;
             }

@@ -44,7 +44,7 @@ class Task implements Runnable {
 
     @Override
     public void run() {
-        if (Store.instance().getReplCount().getOrDefault(chunkId, new HashSet<>()).size() >= replDeg) {
+        if (Store.instance().getReplCount().getSize(chunkId) >= replDeg) {
             System.out.println("Desired replication degree for chunk " + chunkNo + " achieved");
             throw new RuntimeException();
         }
