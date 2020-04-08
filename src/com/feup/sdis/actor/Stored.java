@@ -6,12 +6,6 @@ import com.feup.sdis.model.SerializableHashMap;
 import com.feup.sdis.model.Store;
 import com.feup.sdis.peer.Constants;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import java.util.HashSet;
-import java.util.Set;
-
 public class Stored extends MessageActor {
     final static public String type = "STORED";
 
@@ -29,14 +23,14 @@ public class Stored extends MessageActor {
         final String chunkId = message.getHeader().getChunkId();
         final String senderPeerId = message.getHeader().getSenderId();
         final SerializableHashMap replCounter = Store.instance().getReplCount();
-        if (Store.instance().getReplCount().containsPeer(chunkId, senderPeerId)) {
+        if (!replCounter.containsPeer(chunkId, senderPeerId)) {
             if (message.getHeader().getVersion().equals(Constants.enhancedVersion) &&
                     Store.instance().getBackedUpFiles().get(message.getHeader().getFileId()) != null &&
-                    Store.instance().getReplCount().getSize(chunkId) >= message.getHeader().getReplicationDeg())
+                    replCounter.getSize(chunkId) >= message.getHeader().getReplicationDeg())
                 this.removeExcess(senderPeerId);
             else {
                 System.out.println("Updated replication table for chunk " + chunkId + ", added peer " + senderPeerId);
-                Store.instance().getReplCount().addNewID(chunkId, senderPeerId);
+                replCounter.addNewID(chunkId, senderPeerId);
             }
 
         }

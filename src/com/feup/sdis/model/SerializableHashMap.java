@@ -18,20 +18,28 @@ public class SerializableHashMap {
                 final FileInputStream file = new FileInputStream(filename);
                 final ObjectInputStream inputStream = new ObjectInputStream(file);
                 this.files = (ConcurrentHashMap<String, Set<String>>) inputStream.readObject();
+                inputStream.close();
+                file.close();
             }
-
-            final FileOutputStream outputStream = new FileOutputStream(filename);
-            this.objectOutputStream = new ObjectOutputStream(outputStream);
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                final FileOutputStream outputStream = new FileOutputStream(filename);
+                this.objectOutputStream = new ObjectOutputStream(outputStream);
+                objectOutputStream.writeObject(files);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
+        System.out.println("Current hashmap size: " + this.files.size());
     }
 
     private synchronized void updateObject(){
         try {
             objectOutputStream.writeObject(files);
+            objectOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,12 +64,16 @@ public class SerializableHashMap {
     }
 
     public synchronized void addNewID(String key, String peerId){
-        this.getOrDefault(key, new HashSet<>()).add(peerId);
+        Set<String> peers = this.getOrDefault(key, new HashSet<>());
+        peers.add(peerId);
+        this.files.put(key, peers);
         this.updateObject();
     }
 
     public synchronized void removeID(String key, String peerId){
-        this.getOrDefault(key, new HashSet<>()).add(peerId);
+        Set<String> peers = this.getOrDefault(key, new HashSet<>());
+        peers.remove(peerId);
+        this.files.put(key, peers);
         this.updateObject();
     }
 

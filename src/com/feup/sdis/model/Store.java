@@ -16,7 +16,7 @@ public class Store {
 
     private Store(){}
 
-    public static Store instance(){
+    public synchronized static Store instance(){
         if(storeInstance == null){
             storeInstance = new Store();
         }
