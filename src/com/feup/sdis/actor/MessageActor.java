@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class MessageActor {
     protected final Message message;
-    private final Random random = new Random();
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+    protected final Random random = new Random();
+    protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
 
 
     protected MessageActor(Message message) {
@@ -29,7 +29,7 @@ public abstract class MessageActor {
     }
 
     protected void sendMessage(int port, String groupChannel, Message msg) {
-        scheduler.scheduleAtFixedRate(() -> {
+        scheduler.schedule(() -> {
             try {
                 final InetAddress group = InetAddress.getByName(groupChannel);
                 final MulticastSocket socket = SocketFactory.buildMulticastSocket(port, group);
@@ -38,8 +38,7 @@ public abstract class MessageActor {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            throw new RuntimeException();
-        }, random.nextInt(400 + 1), 1000, TimeUnit.MILLISECONDS);
+        }, random.nextInt(400 + 1), TimeUnit.MILLISECONDS);
     }
 
     abstract String getType();

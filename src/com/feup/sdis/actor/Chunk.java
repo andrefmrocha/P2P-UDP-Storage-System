@@ -28,6 +28,7 @@ public class Chunk extends MessageActor {
         final int chunkNo = Integer.parseInt(message.getHeader().getChunkNo());
         BackupFileInfo localInfo = Store.instance().getBackedUpFiles().get(fileID);
         if(!isFileBackedUp(localInfo)) {
+            Store.instance().getChunksSent().add(message.getHeader().getChunkId());
             System.out.println("This peer was not the Restore initiator");
             return;
         }
