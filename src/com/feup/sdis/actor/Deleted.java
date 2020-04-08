@@ -23,11 +23,12 @@ public class Deleted extends MessageActor {
     @Override
     public void process() {
         final String chunkId = message.getHeader().getChunkId();
+        final String peerId = message.getHeader().getSenderId();
         final SerializableHashMap replCounter = Store.instance().getReplCount();
         final Set<String> currentReplications =
                 replCounter.getOrDefault(chunkId, new HashSet<>());
-        if (!currentReplications.contains(chunkId)){
-            currentReplications.remove(chunkId);
+        if (currentReplications.contains(peerId)){
+            currentReplications.remove(peerId);
             replCounter.put(chunkId, currentReplications);
         }
 
