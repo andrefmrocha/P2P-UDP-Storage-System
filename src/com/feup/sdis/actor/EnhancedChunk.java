@@ -18,7 +18,7 @@ public class EnhancedChunk extends Chunk  {
 
     @Override
     public void process() throws IOException {
-        final String hostname = message.getHeader().getHostname();
+        final String hostname = message.getHeader().getExtraParam();
         if (hostname == null){
             return;
         }

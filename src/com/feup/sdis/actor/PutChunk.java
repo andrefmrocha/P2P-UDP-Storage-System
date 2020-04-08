@@ -40,6 +40,10 @@ public class PutChunk extends MessageActor {
             return;
         }
 
+        if(!this.checkReplDegree(chunkId, msgHeader)){
+            System.out.println("Replication degree for chunk " + chunkId + " has already been hit");
+        }
+
         // store relevant information
         int desiredReplicationDegree = msgHeader.getReplicationDeg();
         int chunkNo = Integer.parseInt(msgHeader.getChunkNo());

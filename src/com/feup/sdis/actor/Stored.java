@@ -34,8 +34,8 @@ public class Stored extends MessageActor {
         if (!currentReplications.contains(message.getHeader().getSenderId())) {
             if (message.getHeader().getVersion().equals(Constants.enhancedVersion) &&
                     Store.instance().getBackedUpFiles().get(message.getHeader().getFileId()) != null &&
-                    currentReplications.size() > message.getHeader().getReplicationDeg())
-                this.removeExcess();
+                    currentReplications.size() >= message.getHeader().getReplicationDeg())
+                this.removeExcess(senderPeerId);
             else {
                 System.out.println("Updated replication table for chunk " + chunkId + ", added peer " + senderPeerId);
                 currentReplications.add(senderPeerId);
@@ -45,9 +45,10 @@ public class Stored extends MessageActor {
         }
     }
 
-    private void removeExcess() {
+    private void removeExcess(String senderPeerId) {
         final Header header = new Header(Constants.enhancedVersion, Excess.type,
-                Constants.SENDER_ID, message.getHeader().getFileId(), Integer.parseInt(message.getHeader().getChunkNo()));
+                Constants.SENDER_ID, message.getHeader().getFileId(), Integer.parseInt(message.getHeader().getChunkNo()),
+                -1, senderPeerId);
         this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, new Message(header));
     }
 
