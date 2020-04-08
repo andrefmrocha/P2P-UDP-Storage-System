@@ -10,8 +10,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +39,7 @@ public class Delete implements Action {
             final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
             final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
             final String fileContent = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-            final String fileID = Action.generateId(fileContent);
+            final String fileID = Action.generateId(fileContent, file.lastModified());
             final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE);
 
             // remove store info

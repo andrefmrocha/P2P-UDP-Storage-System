@@ -86,12 +86,12 @@ public class Backup implements Action {
         replDeg = Integer.parseInt(args[2]);
     }
 
-    public static String sendPutChunk(Path filePath, int replDeg, ScheduledExecutorService scheduler) throws IOException {
+    public static String sendPutChunk(File sendingFile, int replDeg, ScheduledExecutorService scheduler) throws IOException {
         final InetAddress group = InetAddress.getByName(Constants.MDB_CHANNEL);
         final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
-        final String fileContent = new String(Files.readAllBytes(filePath), StandardCharsets.UTF_8);
+        final String fileContent = new String(Files.readAllBytes(sendingFile.toPath()), StandardCharsets.UTF_8);
         final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE);
-        final String fileId = Action.generateId(fileContent);
+        final String fileId = Action.generateId(fileContent, sendingFile.lastModified());
         final String senderId = Constants.SENDER_ID;
         for (int i = 0; i < numChunks; i++) {
             final String chunk = fileContent.substring(
@@ -110,12 +110,13 @@ public class Backup implements Action {
     @Override
     public String process() {
         if (!sendingFile.exists()) {
+            System.out.println("Failed to find file!");
             return "Failed to find file!";
         }
         try {
-            final String fileContent = Backup.sendPutChunk(sendingFile.toPath(), this.replDeg, scheduler);
+            final String fileContent = Backup.sendPutChunk(sendingFile, this.replDeg, scheduler);
             final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE);
-            final String fileId = Action.generateId(fileContent);
+            final String fileId = Action.generateId(fileContent, sendingFile.lastModified());
             Store.instance().getBackedUpFiles().put(fileId, new BackupFileInfo(fileId,
                     sendingFile.getName(),
                     sendingFile.getPath(),

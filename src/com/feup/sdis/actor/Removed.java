@@ -32,8 +32,6 @@ public class Removed extends MessageActor {
     @Override
     public void process() {
         final String chunkId = message.getHeader().getChunkId();
-        final String fileID = message.getHeader().getFileId();
-        final int chunkNo = Integer.parseInt(message.getHeader().getChunkNo());
         final SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
 
         // update repl count on all peers
@@ -55,7 +53,7 @@ public class Removed extends MessageActor {
                 int replDeg = stored.getDesiredReplicationDegree();
 
                 try {
-                    Backup.sendPutChunk((new File(Constants.backupFolder + chunkId)).toPath(),
+                    Backup.sendPutChunk(new File(Constants.backupFolder + chunkId),
                                         replDeg, scheduler);
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -8,10 +8,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public interface Action {
-    static String generateId(String fileContent) {
+    static String generateId(String fileContent, long lastModified) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(fileContent.getBytes(StandardCharsets.UTF_8));
+            byte[] hash = md.digest((fileContent + lastModified).getBytes(StandardCharsets.UTF_8));
             String hex = String.format("%064x", new BigInteger(1, hash));
             return hex;
         }
