@@ -20,8 +20,8 @@ run_client()
 }
 
 # start processes
-#run_client 1 BACKUP testfile.txt 3
+run_client 1 BACKUP READd 3
 #run_client 2 RECLAIM 0
 #run_client 2 RECLAIM 10000
 #run_client 3 RECLAIM 0
-run_client 1 DELETE testfile.txt
+#run_client 1 DELETE README.md
