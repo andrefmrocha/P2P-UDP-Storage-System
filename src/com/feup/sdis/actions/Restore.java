@@ -48,9 +48,8 @@ public class Restore implements Action {
             final String fileID = backupFileInfo.getfileID();
             final int numChunks = backupFileInfo.getNChunks();
             final String senderId = Constants.SENDER_ID;
+            System.out.println("Starting restore protocol for file " + fileID);
             for (int i = 0; i < numChunks; i++) {
-                System.out.println(numChunks);
-
                 final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version,
                                     GetChunk.type, senderId, fileID, i);
                 final Message message = new Message(header);
@@ -65,6 +64,7 @@ public class Restore implements Action {
 
                     tries.getAndIncrement();
                     try {
+                        System.out.println("Sending GET_CHUNK for chunk " + chunkN);
                         socket.send(datagramPacket);
                     } catch (IOException e) {
                         e.printStackTrace();

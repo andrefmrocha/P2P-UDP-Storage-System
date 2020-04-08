@@ -33,6 +33,9 @@ public class ControlChannelReceiver extends Receiver {
             case Deleted.type:
                 messageActor = new Deleted(new Message(header));
                 break;
+            case Excess.type:
+                messageActor = new Excess(new Message(header));
+                break;
             default:
                 throw new MessageError("Unexpected message type: " + header.getMessageType());
         }

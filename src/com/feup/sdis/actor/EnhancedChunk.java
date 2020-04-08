@@ -18,7 +18,7 @@ public class EnhancedChunk extends Chunk  {
 
     @Override
     public void process() throws IOException {
-        final String hostname = message.getHeader().getHostname();
+        final String hostname = message.getHeader().getExtraParam();
         if (hostname == null){
             return;
         }
@@ -29,10 +29,10 @@ public class EnhancedChunk extends Chunk  {
         final String fileID = message.getHeader().getFileId();
         final int chunkNo = Integer.parseInt(message.getHeader().getChunkNo());
         BackupFileInfo localInfo = Store.instance().getBackedUpFiles().get(fileID);
-        if (this.checkFile(localInfo)){
+        if (this.isFileBackedUp(localInfo)){
             out.println("RDY");
             out.flush();
-            if(this.checkChunk(localInfo, chunkNo)){
+            if(!this.isChunkRestored(localInfo, chunkNo)){
                 StringBuilder builder = new StringBuilder();
                 String buffer;
                 while ((buffer = in.readLine()) != null){

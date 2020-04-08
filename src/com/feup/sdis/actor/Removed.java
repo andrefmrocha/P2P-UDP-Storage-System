@@ -52,7 +52,8 @@ public class Removed extends MessageActor {
 
             final StoredChunkInfo stored = storedFiles.get(chunkId);
             if (currReplDegree.size() < stored.getDesiredReplicationDegree()) {
-
+                System.out.println("Replication degree dropped below the desired level");
+                System.out.println("Starting backup protocol for chunk " + chunkId);
                 int replDeg = stored.getDesiredReplicationDegree();
 
                 try {

@@ -30,7 +30,8 @@ public class Delete extends MessageActor {
         for(Map.Entry<String,StoredChunkInfo> entry : storedFiles.entrySet()) {
             String chunkId = entry.getKey();
             if(chunkId.startsWith(fileId)) {
-                final File file = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
+                System.out.println("Deleting chunk " + chunkId);
+                final File file = new File(Constants.backupFolder + chunkId);
                 if(!file.delete()){
                     System.out.println("Failed to delete chunk " + chunkId);
                 }

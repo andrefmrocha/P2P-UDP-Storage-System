@@ -1,9 +1,11 @@
 package com.feup.sdis.model;
 
+import com.feup.sdis.actor.Chunk;
+import com.feup.sdis.actor.Excess;
 import com.feup.sdis.peer.Constants;
 
 public class Header {
-    private final String hostname;
+    private final String extraParam;
     private String version;
     private String messageType;
     private String senderId;
@@ -19,8 +21,8 @@ public class Header {
         return messageType;
     }
 
-    public String getHostname() {
-        return hostname;
+    public String getExtraParam() {
+        return extraParam;
     }
 
     public String getSenderId() {
@@ -39,7 +41,7 @@ public class Header {
         return replicationDeg;
     }
 
-    public Header(String version, String messageType, String senderId, String fileId, int chunkNo, int replicationDeg, String hostname) {
+    public Header(String version, String messageType, String senderId, String fileId, int chunkNo, int replicationDeg, String extraParam) {
         this.messageType = messageType;
         this.senderId = senderId;
         this.fileId = fileId;
@@ -49,7 +51,7 @@ public class Header {
         this.chunkNo = chunkString;
         this.replicationDeg = replicationDeg;
         this.version = version;
-        this.hostname = hostname;
+        this.extraParam = extraParam;
     }
 
     public Header(String version, String messageType, String senderId, String fileId, int chunkNo, int replicationDeg) {
@@ -68,14 +70,15 @@ public class Header {
         final String[] args = header.split("\\s+");
         int replicationDeg = -1;
         int chunkNo = -1;
-        String hostname = null;
+        String extraParam = null;
         if (args.length < 4)
             throw new MessageError("Missing Header parameters!");
         if (args.length >= 5)
             chunkNo = Integer.parseInt(args[4]);
         if (args.length == 6){
-            if(args[5].contains("."))
-                hostname = args[5];
+            if((args[1].equals(Chunk.type) && args[0].equals(Constants.enhancedVersion))
+                || args[1].equals(Excess.type))
+                extraParam = args[5];
             else
                 replicationDeg = Integer.parseInt(args[5]);
         }
@@ -88,7 +91,7 @@ public class Header {
                 args[3],
                 chunkNo,
                 replicationDeg,
-                hostname
+                extraParam
         );
     }
 
@@ -101,6 +104,6 @@ public class Header {
         return version + " " + messageType +
                 " " + senderId + " " + fileId + " " +
                 (chunkNo.equals("-1") ? "" : chunkNo) + " " + (replicationDeg == -1 ? "" : replicationDeg) +
-                ((hostname == null) ? "" : (hostname)) + "\n\r";
+                ((extraParam == null) ? "" : (extraParam)) + "\n\r";
     }
 }

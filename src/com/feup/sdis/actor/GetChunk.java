@@ -28,12 +28,14 @@ public class GetChunk extends MessageActor {
         final String chunkNo = message.getHeader().getChunkNo();
         final String chunkId = message.getHeader().getChunkId();
 
-        if (Store.instance().getStoredFiles().containsKey(chunkId)) {
-            File chunkFile = new File(Constants.SENDER_ID + "/" + Constants.backupFolder + chunkId);
-            final String fileContent = new String(Files.readAllBytes(chunkFile.toPath()), StandardCharsets.UTF_8);
-
-            sendFile(fileID, chunkNo, fileContent);
+        if(!Store.instance().getStoredFiles().containsKey(chunkId)) {
+            System.out.println("Do not have chunk " + chunkId + " stored");
+            return;
         }
+        File chunkFile = new File(Constants.backupFolder + chunkId);
+        final String fileContent = new String(Files.readAllBytes(chunkFile.toPath()), StandardCharsets.UTF_8);
+        System.out.println("Sending CHUNK msg for chunk " + chunkId);
+        sendFile(fileID, chunkNo, fileContent);
     }
 
     protected void sendFile(String fileID, String chunkNo, String fileContent) throws IOException {
