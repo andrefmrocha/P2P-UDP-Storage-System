@@ -3,6 +3,7 @@ package com.feup.sdis.actor;
 import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashSet;
@@ -24,7 +25,7 @@ public class PutChunk extends MessageActor {
         final Header msgHeader = message.getHeader();
         final String fileID = msgHeader.getFileId();
         final String chunkId = msgHeader.getChunkId();
-        int chunkSize = message.getBody().length();
+        int chunkSize = message.getBody().length;
         Store store = Store.instance();
 
         int diskSpaceLimit = store.getMaxDiskSpace();
@@ -54,9 +55,9 @@ public class PutChunk extends MessageActor {
         replCounter.addNewID(chunkId, Constants.SENDER_ID);
 
         // write chunk to disk
-        PrintWriter fileOutputStream = new PrintWriter(Constants.backupFolder + chunkId);
-        fileOutputStream.write(message.getBody());
-        fileOutputStream.close();
+        try (FileOutputStream fos = new FileOutputStream(Constants.backupFolder + chunkId)) {
+            fos.write(message.getBody());
+        }
         this.sendStored(msgHeader);
 
     }

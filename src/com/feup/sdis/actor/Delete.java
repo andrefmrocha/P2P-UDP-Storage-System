@@ -7,6 +7,8 @@ import com.feup.sdis.model.StoredChunkInfo;
 import com.feup.sdis.peer.Constants;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -27,15 +29,17 @@ public class Delete extends MessageActor {
         final SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
         final String fileId = message.getHeader().getFileId();
 
+        List<String> storedFilesToRemove = new ArrayList<>();
         for(Map.Entry<String,StoredChunkInfo> entry : storedFiles.entrySet()) {
             String chunkId = entry.getKey();
             if(chunkId.startsWith(fileId)) {
+                storedFilesToRemove.add(chunkId);
                 System.out.println("Deleting chunk " + chunkId);
+
                 final File file = new File(Constants.backupFolder + chunkId);
                 if(!file.delete()){
                     System.out.println("Failed to delete chunk " + chunkId);
                 }
-                storedFiles.remove(chunkId);
                 if(message.getHeader().getVersion().equals(Constants.enhancedVersion)){
                     final Header msgHeader = message.getHeader();
                     final Header sendingHeader = new Header(
@@ -47,9 +51,11 @@ public class Delete extends MessageActor {
                     final Message message = new Message(sendingHeader);
                     this.sendMessage(Constants.MC_PORT, Constants.MC_CHANNEL, message);
                 }
-
                 Store.instance().getReplCount().removeChunkInfo(chunkId);
             }
+        }
+        for (String chunkId : storedFilesToRemove) {
+            storedFiles.remove(chunkId);
         }
 
     }

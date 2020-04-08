@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -28,6 +30,7 @@ public class Reclaim implements Action {
         int usedSize = 0;
 
         SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
+        List<String> storedFilesToRemove = new ArrayList<>();
         for(Map.Entry<String,StoredChunkInfo> entry : storedFiles.entrySet()) {
             final String chunkID = entry.getKey();
             StoredChunkInfo chunkInfo = entry.getValue();
@@ -59,14 +62,18 @@ public class Reclaim implements Action {
                     if(!file.delete()){
                         System.out.println("Failed to delete chunk " + chunkID);
                     }
-                    storedFiles.remove(chunkID);
+
+                    storedFilesToRemove.add(chunkID);
                     Store.instance().getReplCount().removeID(chunkID, Constants.SENDER_ID);
-                    // TODO update replication count (remove this peer from list)
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+        }
+
+        for (String chunkId : storedFilesToRemove) {
+            storedFiles.remove(chunkId);
         }
         return "Reclaimed space";
     }

@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +54,7 @@ class Task implements Runnable {
         tries++;
 
         try {
-            System.out.println("Sending PUT_CHUNK for chunk " + chunkNo + ", attempt " + (tries + 1) + "/" + Constants.MAX_PUT_CHUNK_TRIES);
+            System.out.println("Sending PUT_CHUNK for chunk " + chunkNo + ", attempt " + tries + "/" + Constants.MAX_PUT_CHUNK_TRIES);
 
             socket.send(datagramPacket);
         } catch (IOException e) {
@@ -83,16 +83,15 @@ public class Backup implements Action {
         replDeg = Integer.parseInt(args[2]);
     }
 
-    public static String sendPutChunk(File sendingFile, int replDeg, ScheduledExecutorService scheduler) throws IOException {
+    public static byte[] sendPutChunk(File sendingFile, int replDeg, ScheduledExecutorService scheduler) throws IOException {
         final InetAddress group = InetAddress.getByName(Constants.MDB_CHANNEL);
         final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
-        final String fileContent = new String(Files.readAllBytes(sendingFile.toPath()), StandardCharsets.UTF_8);
-        final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE);
+        final byte[] fileContent = Files.readAllBytes(sendingFile.toPath());
+        final int numChunks = (int) Math.ceil(fileContent.length / (double) BLOCK_SIZE);
         final String fileId = Action.generateId(fileContent, sendingFile.lastModified());
         final String senderId = Constants.SENDER_ID;
         for (int i = 0; i < numChunks; i++) {
-            final String chunk = fileContent.substring(
-                    BLOCK_SIZE * i, Math.min(BLOCK_SIZE * (i + 1), fileContent.length()));
+            final byte[] chunk = Arrays.copyOfRange(fileContent, BLOCK_SIZE * i, Math.min(BLOCK_SIZE * (i + 1), fileContent.length));
             final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version
                     , PutChunk.type, senderId, fileId, i, replDeg);
             final Message message = new Message(header, chunk);
@@ -111,8 +110,8 @@ public class Backup implements Action {
             return "Failed to find file!";
         }
         try {
-            final String fileContent = Backup.sendPutChunk(sendingFile, this.replDeg, scheduler);
-            final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE);
+            final byte[] fileContent = Backup.sendPutChunk(sendingFile, this.replDeg, scheduler);
+            final int numChunks = (int) Math.ceil(fileContent.length / (double) BLOCK_SIZE);
             final String fileId = Action.generateId(fileContent, sendingFile.lastModified());
             Store.instance().getBackedUpFiles().put(fileId, new BackupFileInfo(fileId,
                     sendingFile.getName(),

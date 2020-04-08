@@ -38,12 +38,12 @@ public class GetChunk extends MessageActor {
             return;
         }
         File chunkFile = new File(Constants.backupFolder + chunkId);
-        final String fileContent = new String(Files.readAllBytes(chunkFile.toPath()), StandardCharsets.UTF_8);
+        final byte[] fileContent = Files.readAllBytes(chunkFile.toPath());
         System.out.println("Sending CHUNK msg for chunk " + chunkId);
         sendFile(fileID, chunkNo, fileContent);
     }
 
-    protected void sendFile(String fileID, String chunkNo, String fileContent) throws IOException {
+    protected void sendFile(String fileID, String chunkNo, byte[] fileContent) throws IOException {
         final Header sendingHeader = new Header(
                 Constants.version,
                 Chunk.type, Constants.SENDER_ID,

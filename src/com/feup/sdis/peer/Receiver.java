@@ -4,14 +4,16 @@ import com.feup.sdis.actor.MessageActor;
 import com.feup.sdis.model.MessageError;
 import com.feup.sdis.model.SocketFactory;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public abstract class Receiver implements Runnable {
-    abstract MessageActor parseMessage(String msg) throws MessageError;
+    abstract MessageActor parseMessage(DatagramPacket packet) throws MessageError;
     abstract int getPort();
     abstract String getChannel();
 
@@ -38,7 +40,7 @@ public abstract class Receiver implements Runnable {
                 System.out.println("\nReceived new message: " + msg.split("\\r?\\n")[0]);
                 pool.execute(()-> {
                     try {
-                        MessageActor actor = this.parseMessage(msg);
+                        MessageActor actor = this.parseMessage(packet);
                         actor.process();
                     } catch (IOException | MessageError e) {
                         e.printStackTrace();

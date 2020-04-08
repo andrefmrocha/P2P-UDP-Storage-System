@@ -58,7 +58,7 @@ public class Restore implements Action {
                 final int chunkN = i;
                 final AtomicInteger tries = new AtomicInteger();
                 scheduler.scheduleAtFixedRate(() -> {
-                    if (backupFileInfo.getRestoredChunks().contains(chunkN) || backupFileInfo.isFullyRestored() ||
+                    if (backupFileInfo.getRestoredChunks().get(chunkN) != null || backupFileInfo.isFullyRestored() ||
                         tries.get() >= MAX_GET_CHUNK_TRIES)
                         throw new RuntimeException();
 

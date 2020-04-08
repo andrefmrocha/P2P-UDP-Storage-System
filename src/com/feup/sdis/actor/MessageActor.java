@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,8 +25,9 @@ public abstract class MessageActor {
         this.message = message;
     }
 
-    public static String parseBody(String msg) {
-        return msg.substring(msg.indexOf("\n\r\n\r") + 4);
+    public static byte[] parseBody(String msg, byte[] msgBytes) {
+        final int sliceI = msg.indexOf("\n\r\n\r") + 4;
+        return Arrays.copyOfRange(msgBytes, sliceI, msgBytes.length);
     }
 
     protected void sendMessage(int port, String groupChannel, Message msg) {
