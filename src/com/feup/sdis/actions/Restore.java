@@ -9,15 +9,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 
 public class Restore implements Action {
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     private BackupFileInfo backupFileInfo;
 
     public Restore(String[] args) throws MessageError {

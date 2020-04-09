@@ -4,10 +4,6 @@ import com.feup.sdis.model.Message;
 import com.feup.sdis.model.SerializableHashMap;
 import com.feup.sdis.model.Store;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 public class Deleted extends MessageActor {
     final static public String type = "DELETED";
 

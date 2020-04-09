@@ -9,8 +9,6 @@ import com.feup.sdis.peer.Constants;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,7 +16,6 @@ import java.util.concurrent.ScheduledExecutorService;
 public class Removed extends MessageActor {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     final static public String type = "REMOVED";
-    private final Random random = new Random();
 
     public Removed(Message message) {
         super(message);
