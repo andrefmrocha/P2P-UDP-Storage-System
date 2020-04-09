@@ -28,7 +28,7 @@ public class PutChunk extends MessageActor {
         int chunkNo = Integer.parseInt(msgHeader.getChunkNo());
 
         if(message.getBody().length == 0){
-            System.out.println("Chunk number " + chunkNo + " of file " + fileID + " has an empty body. Exiting.");
+            System.out.println("Chunk number " + chunkNo + " of file " + fileID + " has an empty body");
             return;
         }
 

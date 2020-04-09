@@ -115,10 +115,6 @@ public class Backup implements Action {
         return fileContent;
     }
 
-    private static void sendChunk(int replDeg, ScheduledExecutorService scheduler, InetAddress group, MulticastSocket socket, String fileId, String senderId, int i, byte[] chunk) {
-
-    }
-
     @Override
     public String process() {
         if (!sendingFile.exists()) {
