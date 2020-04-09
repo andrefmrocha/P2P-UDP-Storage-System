@@ -4,10 +4,7 @@ import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.peer.Constants;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,10 +30,11 @@ public class EnhancedGetChunk extends GetChunk {
             socket = new ServerSocket(Constants.TCP_PORT);
 
         final Socket client = socket.accept();
-        final PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+        final DataOutputStream out = new DataOutputStream(client.getOutputStream());
         final BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         if (in.readLine().equals("RDY")){
-            out.println(fileContent);
+            out.writeInt(fileContent.length);
+            out.write(fileContent);
         }
         out.flush();
         out.close();

@@ -22,7 +22,7 @@ public class EnhancedChunk extends Chunk  {
 
         final Socket socket = new Socket(hostname, Constants.TCP_PORT);
         final PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        final BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        final DataInputStream in = new DataInputStream(socket.getInputStream());
         final String fileID = message.getHeader().getFileId();
         final int chunkNo = Integer.parseInt(message.getHeader().getChunkNo());
         BackupFileInfo localInfo = Store.instance().getBackedUpFiles().get(fileID);
@@ -30,21 +30,20 @@ public class EnhancedChunk extends Chunk  {
             out.println("RDY");
             out.flush();
             if(!this.isChunkRestored(localInfo, chunkNo)){
-                StringBuilder builder = new StringBuilder();
-                String buffer;
-                while ((buffer = in.readLine()) != null){
-                    builder.append(buffer);
+                final int length = in.readInt();
+                if(length > 0){
+                    final byte[] message = new byte[length];
+                    in.readFully(message, 0, message.length);
+                    this.storeFile(message, chunkNo, localInfo);
                 }
                 out.close();
-                //this.storeFile(builder.toString(), chunkNo, localInfo);
-                // TODO this is not implemented, commented out!!! must store as bytes
             }
         } else {
             out.println("N/N"); // Not-needed
             out.flush();
             out.close();
         }
-        while (in.readLine() != null);
+        while (!socket.isClosed() && in.read() != -1);
         in.close();
         socket.close();
     }
