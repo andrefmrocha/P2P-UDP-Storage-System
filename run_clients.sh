@@ -83,4 +83,12 @@ elif [ $SCENARIO == 2 ]; then
   run_client 2 STATE
   run_client 3 STATE
 
+  run_client 1 RECLAIM 0
+  run_client 2 RECLAIM 0
+  sleep 4
+
+  run_client 1 STATE
+  run_client 2 STATE
+  run_client 3 STATE
+
 fi
