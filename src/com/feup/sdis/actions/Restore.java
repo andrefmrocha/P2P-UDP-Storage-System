@@ -5,6 +5,7 @@ import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 import com.feup.sdis.peer.Peer;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -18,6 +19,7 @@ import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 
 public class Restore implements Action {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+    private final File file;
     private BackupFileInfo backupFileInfo;
 
     public Restore(String[] args) throws MessageError {
@@ -25,18 +27,23 @@ public class Restore implements Action {
             throw new MessageError("Wrong number of parameters!");
         }
 
-        for (BackupFileInfo f : Store.instance().getBackedUpFiles().values()) {
-            if (f.getOriginalPath().equals(args[1])) {
-                backupFileInfo = f;
-                break;
-            }
-        }
+        file = new File(args[1]);
+        if(!file.exists()) return;
+
+        String fileID = Action.generateId(file);
+        backupFileInfo = Store.instance().getBackedUpFiles().get(fileID);
     }
 
     @Override
     public String process() {
+        if(!file.exists()) {
+            System.out.println("File does not exist");
+            return "File does not exist";
+        }
+
         if (backupFileInfo == null) {
-            return "File is not backed up!";
+            System.out.println("File was not backed up through this peer");
+            return "File was not backed up through this peer";
         }
 
         backupFileInfo.getRestoredChunks().clear();

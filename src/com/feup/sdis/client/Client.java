@@ -35,7 +35,7 @@ public class Client {
         Dispatcher stub = (Dispatcher) registry.lookup(peerAp);
         String answer = null;
         try {
-            System.out.println("@ Sending message: " + msg);
+            System.out.println("@ Sending message to peer " + peerAp + ": " + msg);
             answer = stub.processMsg(msg);
         } catch (MessageError messageError) {
             messageError.printStackTrace();

@@ -25,14 +25,21 @@ public class Delete implements Action {
         if (args.length != 2) {
             throw new MessageError("Wrong number of parameters!");
         }
-        this.file = new File(args[1]);
+
+        file = new File(args[1]);
+        if(!file.exists()) return;
     }
 
     @Override
     public String process() {
-        System.out.println("Starting delete protocol");
-        if (!file.exists()) {
-            return "Failed to find file!";
+        if(!file.exists()) {
+            System.out.println("File does not exist");
+            return "File does not exist";
+        }
+
+        if (Store.instance().getBackedUpFiles().get(Action.generateId(file)) == null) {
+            System.out.println("File was not backed up through this peer");
+            return "File was not backed up through this peer";
         }
 
         try {
