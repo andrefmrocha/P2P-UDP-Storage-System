@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Client {
 
@@ -28,6 +30,7 @@ public class Client {
 
         final String peerAp = args[0];
 
+        System.out.println(new SimpleDateFormat("HH:mm:ss dd-MM-yyyy").format(new Date()));
         Registry registry = LocateRegistry.getRegistry("localhost");
         Dispatcher stub = (Dispatcher) registry.lookup(peerAp);
         String answer = null;
