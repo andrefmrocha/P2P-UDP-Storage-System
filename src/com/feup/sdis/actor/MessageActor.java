@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class MessageActor {
     protected final Message message;
     protected final Random random = new Random();
-    protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+    protected static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
 
 
     protected MessageActor(Message message) {

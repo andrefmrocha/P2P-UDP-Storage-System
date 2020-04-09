@@ -4,11 +4,9 @@ import com.feup.sdis.actor.MessageActor;
 import com.feup.sdis.model.MessageError;
 import com.feup.sdis.model.SocketFactory;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,12 +14,13 @@ public abstract class Receiver implements Runnable {
     abstract MessageActor parseMessage(DatagramPacket packet) throws MessageError;
     abstract int getPort();
     abstract String getChannel();
+    private static final ExecutorService pool = Executors.newCachedThreadPool();
+
 
     @Override
     public void run() {
         try {
             final MulticastSocket socket = SocketFactory.buildMulticastSocket(getPort(), getChannel());
-            final ExecutorService pool = Executors.newCachedThreadPool();
             while (true) {
                 byte[] buf = new byte[Constants.BLOCK_SIZE + Constants.PACKET_HEADER_PADDING];
                 final DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -43,6 +42,7 @@ public abstract class Receiver implements Runnable {
                         MessageActor actor = this.parseMessage(packet);
                         actor.process();
                     } catch (IOException | MessageError e) {
+                        System.err.println("Error in peer " + Constants.SENDER_ID);
                         e.printStackTrace();
                     }
                 });

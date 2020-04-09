@@ -6,11 +6,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public interface Action {
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+
     static String generateId(byte[] fileContent, long lastModified) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

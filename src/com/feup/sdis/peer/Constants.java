@@ -19,7 +19,7 @@ public class Constants {
     public static final int MAX_GET_CHUNK_TRIES = 5;
     public static final char idSeparation = '#';
     public static final int unlimitedDiskSpace = -1;
-    public static final int TCP_PORT = 8001;
+    public static final int TCP_PORT = 10000;
     public static final int RMI_PORT = 1099;
     public static String SENDER_ID = "unknown";
     public static final String peerParentFolder = "peers/";

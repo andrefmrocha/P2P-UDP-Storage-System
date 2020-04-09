@@ -21,7 +21,8 @@ run_client()
 
 # start processes
 run_client 1 BACKUP t3-cityplan.zip 3
-#run_client 1 RESTORE t3-cityplan.zip
+run_client 1 RESTORE t3-cityplan.zip
+run_client 1 STATE
 #run_client 2 RECLAIM 0
 #run_client 2 RECLAIM 10000
 #run_client 3 RECLAIM 0

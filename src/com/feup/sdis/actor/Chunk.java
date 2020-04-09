@@ -21,27 +21,35 @@ public class Chunk extends MessageActor {
 
     @Override
     public void process() throws IOException {
-        final byte[] chunkContent = message.getBody();
         final String fileID = message.getHeader().getFileId();
+        final byte[] chunkContent = message.getBody();
         final int chunkNo = Integer.parseInt(message.getHeader().getChunkNo());
         BackupFileInfo localInfo = Store.instance().getBackedUpFiles().get(fileID);
+
         if(!isFileBackedUp(localInfo)) {
             Store.instance().getChunksSent().add(message.getHeader().getChunkId());
             System.out.println("This peer was not the Restore initiator");
             return;
         }
 
+        if(initialChecks(chunkNo, localInfo)) return;
+
+        storeFile(chunkContent, chunkNo, localInfo);
+    }
+
+    public synchronized boolean initialChecks(int chunkNo, BackupFileInfo localInfo) {
+
         if(localInfo.isFullyRestored()) {
             System.out.println("File is already fully restored");
-            return;
+            return true;
         }
 
         if(isChunkRestored(localInfo, chunkNo)) {
             System.out.println("Chunk " + chunkNo + " already restored");
-            return;
+            return true;
         }
 
-        storeFile(chunkContent, chunkNo, localInfo);
+        return false;
     }
 
     protected void storeFile(byte[] chunkContent, int chunkNo, BackupFileInfo localInfo) throws IOException {
@@ -61,12 +69,12 @@ public class Chunk extends MessageActor {
         }
     }
 
-    protected boolean isChunkRestored(BackupFileInfo localInfo, int chunkNo) {
+    protected synchronized boolean isChunkRestored(BackupFileInfo localInfo, int chunkNo) {
         return localInfo.getRestoredChunks().get(chunkNo) != null;
     }
 
-    protected boolean isFileBackedUp(BackupFileInfo localInfo) {
-        return !(localInfo == null);
+    protected synchronized boolean isFileBackedUp(BackupFileInfo localInfo) {
+        return localInfo != null;
     }
 
     @Override
