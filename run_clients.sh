@@ -16,7 +16,7 @@ run_client()
   opnd_1=$3
   opnd_2=$4
   java -cp out/production/sdis1920-t1g02/ com.feup.sdis.client.Client $peer_ap $sub_protocol $opnd_1 $opnd_2 >> outputs/clients.txt
-  sleep 1
+  sleep 3
 }
 
 # start processes
@@ -27,3 +27,5 @@ run_client 1 STATE
 #run_client 2 RECLAIM 10000
 #run_client 3 RECLAIM 0
 #run_client 1 DELETE t3-cityplan.zip
+run_client 1 STATE
+run_client 2 STATE

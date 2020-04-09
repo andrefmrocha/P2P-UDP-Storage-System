@@ -32,12 +32,13 @@ public class Client {
         Dispatcher stub = (Dispatcher) registry.lookup(peerAp);
         String answer = null;
         try {
+            System.out.println("@ Sending message: " + msg);
             answer = stub.processMsg(msg);
         } catch (MessageError messageError) {
             messageError.printStackTrace();
         }
-
-        System.out.println(answer);
+        System.out.println("@ Received answer:");
+        System.out.println(answer + "\n");
 
     }
 }

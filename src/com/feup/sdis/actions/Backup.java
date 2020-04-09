@@ -128,7 +128,8 @@ public class Backup implements Action {
             Store.instance().getBackedUpFiles().put(fileId, new BackupFileInfo(fileId,
                     sendingFile.getName(),
                     sendingFile.getPath(),
-                    numChunks));
+                    numChunks,
+                    this.replDeg));
         } catch (IOException e) {
             e.printStackTrace();
         }

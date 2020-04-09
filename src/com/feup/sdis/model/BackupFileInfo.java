@@ -9,13 +9,15 @@ public class BackupFileInfo {
     final private String originalFilename;
     final private String originalPath;
     final private int nChunks;
+    final private int desiredReplicationDegree;
     final private SortedMap<Integer, byte[]> restoredChunks = new ConcurrentSkipListMap<>();
 
-    public BackupFileInfo(String fileID, String originalFilename, String originalPath, int nChunks) {
+    public BackupFileInfo(String fileID, String originalFilename, String originalPath, int nChunks, int desiredReplicationDegree) {
         this.fileID = fileID;
         this.originalFilename = originalFilename;
         this.originalPath = originalPath;
         this.nChunks = nChunks;
+        this.desiredReplicationDegree = desiredReplicationDegree;
     }
 
     public String getfileID() { return fileID; }
@@ -27,6 +29,8 @@ public class BackupFileInfo {
     public int getNChunks() {
         return nChunks;
     }
+
+    public int getDesiredReplicationDegree() { return desiredReplicationDegree; }
 
     public SortedMap<Integer, byte[]> getRestoredChunks() {
         return restoredChunks;
