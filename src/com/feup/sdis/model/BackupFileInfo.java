@@ -1,6 +1,7 @@
 package com.feup.sdis.model;
 
-import java.util.Hashtable;
+import java.util.SortedMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class BackupFileInfo {
 
@@ -8,7 +9,7 @@ public class BackupFileInfo {
     final private String originalFilename;
     final private String originalPath;
     final private int nChunks;
-    final private Hashtable<Integer, String> restoredChunks = new Hashtable();
+    final private SortedMap<Integer, byte[]> restoredChunks = new ConcurrentSkipListMap<>();
 
     public BackupFileInfo(String fileID, String originalFilename, String originalPath, int nChunks) {
         this.fileID = fileID;
@@ -27,7 +28,7 @@ public class BackupFileInfo {
         return nChunks;
     }
 
-    public Hashtable<Integer, String> getRestoredChunks() {
+    public SortedMap<Integer, byte[]> getRestoredChunks() {
         return restoredChunks;
     }
 

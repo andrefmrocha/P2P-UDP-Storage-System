@@ -21,7 +21,7 @@ public class EnhancedGetChunk extends GetChunk {
 
 
     @Override
-    protected void sendFile(String fileID, String chunkNo, String fileContent) throws IOException {
+    protected void sendFile(String fileID, String chunkNo, byte[] fileContent) throws IOException {
         final Header sendingHeader = new Header(
                 Constants.enhancedVersion,
                 Chunk.type, Constants.SENDER_ID,

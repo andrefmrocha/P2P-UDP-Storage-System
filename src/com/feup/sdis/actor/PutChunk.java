@@ -3,6 +3,7 @@ package com.feup.sdis.actor;
 import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashSet;
@@ -24,7 +25,15 @@ public class PutChunk extends MessageActor {
         final Header msgHeader = message.getHeader();
         final String fileID = msgHeader.getFileId();
         final String chunkId = msgHeader.getChunkId();
-        int chunkSize = message.getBody().length();
+        int chunkNo = Integer.parseInt(msgHeader.getChunkNo());
+
+        if(message.getBody().length == 0){
+            System.out.println("Chunk number " + chunkNo + " of file " + fileID + " has an empty body");
+            return;
+        }
+
+
+        int chunkSize = message.getBody().length;
         Store store = Store.instance();
 
         int diskSpaceLimit = store.getMaxDiskSpace();
@@ -46,17 +55,16 @@ public class PutChunk extends MessageActor {
 
         // store relevant information
         int desiredReplicationDegree = msgHeader.getReplicationDeg();
-        int chunkNo = Integer.parseInt(msgHeader.getChunkNo());
         store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
 
         // update own replication count
         final SerializableHashMap replCounter = Store.instance().getReplCount();
-        replCounter.getOrDefault(chunkId, new HashSet<>()).add(Constants.SENDER_ID);
+        replCounter.addNewID(chunkId, Constants.SENDER_ID);
 
         // write chunk to disk
-        PrintWriter fileOutputStream = new PrintWriter(Constants.backupFolder + chunkId);
-        fileOutputStream.write(message.getBody());
-        fileOutputStream.close();
+        try (FileOutputStream fos = new FileOutputStream(Constants.backupFolder + chunkId)) {
+            fos.write(message.getBody());
+        }
         this.sendStored(msgHeader);
 
     }
@@ -64,7 +72,7 @@ public class PutChunk extends MessageActor {
     private boolean checkReplDegree(String chunkId, Header msgHeader) {
         return msgHeader.getVersion().equals(Constants.version) ||
                 (msgHeader.getVersion().equals(Constants.enhancedVersion)
-                        && Store.instance().getReplCount().getOrDefault(chunkId, new HashSet<>()).size() < msgHeader.getReplicationDeg());
+                        && Store.instance().getReplCount().getSize(chunkId) < msgHeader.getReplicationDeg());
     }
 
     private void sendStored(Header msgHeader) {

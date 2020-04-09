@@ -36,19 +36,18 @@ public class Removed extends MessageActor {
 
         // update repl count on all peers
         final SerializableHashMap replCount = Store.instance().getReplCount();
-        final Set<String> currReplDegree = replCount.get(chunkId);
-        if(currReplDegree == null) {
+        if(replCount.contains(chunkId)) {
             System.out.println("[REMOVED] Did not find chunk in replCount");
             return;
         }
-        currReplDegree.remove(message.getHeader().getSenderId());
-        replCount.put(chunkId, currReplDegree);
+
+        replCount.removeID(chunkId, message.getHeader().getSenderId());
 
         // if peer has copy of the chunk
         if (storedFiles.containsKey(chunkId)) {
 
             final StoredChunkInfo stored = storedFiles.get(chunkId);
-            if (currReplDegree.size() < stored.getDesiredReplicationDegree()) {
+            if (replCount.getSize(chunkId) < stored.getDesiredReplicationDegree()) {
                 System.out.println("Replication degree dropped below the desired level");
                 System.out.println("Starting backup protocol for chunk " + chunkId);
                 int replDeg = stored.getDesiredReplicationDegree();

@@ -18,42 +18,69 @@ public class SerializableHashMap {
                 final FileInputStream file = new FileInputStream(filename);
                 final ObjectInputStream inputStream = new ObjectInputStream(file);
                 this.files = (ConcurrentHashMap<String, Set<String>>) inputStream.readObject();
+                inputStream.close();
+                file.close();
             }
-
-            final FileOutputStream outputStream = new FileOutputStream(filename);
-            this.objectOutputStream = new ObjectOutputStream(outputStream);
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                final FileOutputStream outputStream = new FileOutputStream(filename);
+                this.objectOutputStream = new ObjectOutputStream(outputStream);
+                objectOutputStream.writeObject(files);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
     private synchronized void updateObject(){
         try {
             objectOutputStream.writeObject(files);
+            objectOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public synchronized Set<String> put(String s, Set<String> integer) {
-        final Set<String> returnValue = files.put(s, integer);
-        this.updateObject();
-        return returnValue;
-    }
-
-    public synchronized Set<String> getOrDefault(String s, Set<String> set) {
+    private synchronized Set<String> getOrDefault(String s, Set<String> set) {
         return files.getOrDefault(s, Collections.synchronizedSet(set));
     }
 
-    public synchronized Set<String> get(String s) {
-        return files.get(s);
-    }
-
-    public synchronized Set<String> remove(String s) {
+    private synchronized Set<String> remove(String s) {
         final Set<String> returnValue = files.remove(s);
         this.updateObject();
         return returnValue;
+    }
+
+    public synchronized int getSize(String key){
+        return this.getOrDefault(key, new HashSet<>()).size();
+    }
+
+    public synchronized void removeChunkInfo(String key){
+        this.remove(key);
+    }
+
+    public synchronized void addNewID(String key, String peerId){
+        Set<String> peers = this.getOrDefault(key, new HashSet<>());
+        peers.add(peerId);
+        this.files.put(key, peers);
+        this.updateObject();
+    }
+
+    public synchronized void removeID(String key, String peerId){
+        Set<String> peers = this.getOrDefault(key, new HashSet<>());
+        peers.remove(peerId);
+        this.files.put(key, peers);
+        this.updateObject();
+    }
+
+    public synchronized boolean contains(String key){
+        return this.files.containsKey(key);
+    }
+
+    public synchronized boolean containsPeer(String key, String peerId){
+        return this.getOrDefault(key, new HashSet<>()).contains(peerId);
     }
 }

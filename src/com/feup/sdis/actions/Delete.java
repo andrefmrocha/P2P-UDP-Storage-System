@@ -10,8 +10,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,15 +38,15 @@ public class Delete implements Action {
         try {
             final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
             final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
-            final String fileContent = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+            final byte[] fileContent = Files.readAllBytes(file.toPath());
             final String fileID = Action.generateId(fileContent, file.lastModified());
-            final int numChunks = (int) Math.ceil(fileContent.length() / (double) BLOCK_SIZE);
+            final int numChunks = (int) Math.ceil(fileContent.length / (double) BLOCK_SIZE);
 
             // remove store info
             Store.instance().getBackedUpFiles().remove(fileID);
-            if (!Peer.enhanced){
+            if (!Peer.enhanced) {
                 for (int chunkNo = 0; chunkNo < numChunks; chunkNo++) {
-                    Store.instance().getReplCount().remove(fileID + Constants.idSeparation + chunkNo);
+                    Store.instance().getReplCount().removeChunkInfo(fileID + Constants.idSeparation + chunkNo);
                 }
             }
 
@@ -94,9 +92,8 @@ public class Delete implements Action {
     private boolean checkReplications(String fileID, int numChunks) {
         boolean allDeleted = true;
         for (int chunkNo = 0; chunkNo < numChunks; chunkNo++) {
-            Set<String> replCount = Store.instance().getReplCount().getOrDefault(
-                    fileID + Constants.idSeparation + chunkNo, new HashSet<>());
-            if(replCount.size() > 0){
+            if (Store.instance().getReplCount()
+                    .getSize(fileID + Constants.idSeparation + chunkNo) > 0) {
                 allDeleted = false;
                 break;
             }

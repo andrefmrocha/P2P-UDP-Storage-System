@@ -5,10 +5,7 @@ import com.feup.sdis.model.Message;
 import com.feup.sdis.model.Store;
 import com.feup.sdis.peer.Constants;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class EnhancedChunk extends Chunk  {
@@ -39,7 +36,8 @@ public class EnhancedChunk extends Chunk  {
                     builder.append(buffer);
                 }
                 out.close();
-                this.storeFile(builder.toString(), chunkNo, localInfo);
+                //this.storeFile(builder.toString(), chunkNo, localInfo);
+                // TODO this is not implemented, commented out!!! must store as bytes
             }
         } else {
             out.println("N/N"); // Not-needed

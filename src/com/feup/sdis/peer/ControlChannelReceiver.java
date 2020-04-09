@@ -5,11 +5,14 @@ import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.model.MessageError;
 
+import java.net.DatagramPacket;
+
 public class ControlChannelReceiver extends Receiver {
 
 
     @Override
-    public MessageActor parseMessage(String msg) throws MessageError {
+    public MessageActor parseMessage(DatagramPacket packet) throws MessageError {
+        String msg = new String(packet.getData(), 0, packet.getLength());
         final String headerMsg = msg.substring(0, msg.indexOf("\n\r"));
         final Header header = Header.parseHeader(headerMsg);
         MessageActor messageActor;

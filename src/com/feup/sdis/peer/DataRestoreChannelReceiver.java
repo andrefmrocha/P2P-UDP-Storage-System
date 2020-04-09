@@ -7,18 +7,24 @@ import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
 import com.feup.sdis.model.MessageError;
 
+import java.net.DatagramPacket;
+import java.util.Arrays;
+
 public class DataRestoreChannelReceiver extends Receiver {
     @Override
-    MessageActor parseMessage(String msg) throws MessageError {
+    MessageActor parseMessage(DatagramPacket packet) throws MessageError {
+        final String msg = new String(packet.getData(), 0, packet.getLength());
+        byte[] msgBytes = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
+
         final String headerMsg = msg.substring(0, msg.indexOf("\n\r"));
         final Header header = Header.parseHeader(headerMsg);
         MessageActor messageActor;
 
         if (Chunk.type.equals(header.getMessageType())) {
             if (header.getVersion().equals("1.0"))
-                messageActor = new Chunk(new Message(header, MessageActor.parseBody(msg)));
+                messageActor = new Chunk(new Message(header, MessageActor.parseBody(msg, msgBytes)));
             else
-                messageActor = new EnhancedChunk(new Message(header, MessageActor.parseBody(msg)));
+                messageActor = new EnhancedChunk(new Message(header, MessageActor.parseBody(msg, msgBytes)));
         } else {
             throw new MessageError("Unexpected message type: " + header.getMessageType());
         }

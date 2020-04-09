@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,20 +17,21 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class MessageActor {
     protected final Message message;
-    private final Random random = new Random();
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+    protected final Random random = new Random();
+    protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
 
 
     protected MessageActor(Message message) {
         this.message = message;
     }
 
-    public static String parseBody(String msg) {
-        return msg.substring(msg.indexOf("\n\r\n\r") + 4);
+    public static byte[] parseBody(String msg, byte[] msgBytes) {
+        final int sliceI = msg.indexOf("\n\r\n\r") + 4;
+        return Arrays.copyOfRange(msgBytes, sliceI, msgBytes.length);
     }
 
     protected void sendMessage(int port, String groupChannel, Message msg) {
-        scheduler.scheduleAtFixedRate(() -> {
+        scheduler.schedule(() -> {
             try {
                 final InetAddress group = InetAddress.getByName(groupChannel);
                 final MulticastSocket socket = SocketFactory.buildMulticastSocket(port, group);
@@ -38,8 +40,7 @@ public abstract class MessageActor {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            throw new RuntimeException();
-        }, random.nextInt(400 + 1), 1000, TimeUnit.MILLISECONDS);
+        }, random.nextInt(400 + 1), TimeUnit.MILLISECONDS);
     }
 
     abstract String getType();

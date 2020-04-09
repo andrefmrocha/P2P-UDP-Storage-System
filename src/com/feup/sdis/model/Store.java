@@ -2,21 +2,20 @@ package com.feup.sdis.model;
 
 import com.feup.sdis.peer.Constants;
 
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class Store {
     private static Store storeInstance;
     final private SerializableHashMap replCount = new SerializableHashMap(Constants.peerRootFolder + "files.ser");
-    //TODO Check if this is the best approach
     final private SortedMap<String, BackupFileInfo> backedUpFiles = new ConcurrentSkipListMap<>();
     final private SortedMap<String, StoredChunkInfo> storedFiles = new ConcurrentSkipListMap<>();
+    final private Set<String> chunksSent = Collections.synchronizedSet(new HashSet<>());
     private int maxDiskSpace = Constants.unlimitedDiskSpace;
 
     private Store(){}
 
-    public static Store instance(){
+    public synchronized static Store instance(){
         if(storeInstance == null){
             storeInstance = new Store();
         }
@@ -45,5 +44,9 @@ public class Store {
             total += entry.getValue().chunkSize;
         }
         return total;
+    }
+
+    public Set<String> getChunksSent() {
+        return chunksSent;
     }
 }
