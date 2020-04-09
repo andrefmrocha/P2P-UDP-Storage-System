@@ -18,41 +18,29 @@ public class EnhancedGetChunk extends GetChunk {
     private static ServerSocket socket;
 
 
-    public static boolean isAvailable(int port) {
+    public ServerSocket isAvailable(int port) {
         ServerSocket server = null;
         DatagramSocket datagramSocket = null;
         try {
             server = new ServerSocket(port);
-            server.setReuseAddress(true);
             datagramSocket = new DatagramSocket(port);
             datagramSocket.setReuseAddress(true);
-            return true;
         } catch (IOException e) {
         } finally {
             if (datagramSocket != null) {
                 datagramSocket.close();
             }
-
-            if (server != null) {
-                try {
-                    server.close();
-                } catch (IOException e) {
-                    /* should not be thrown */
-                }
-            }
         }
 
-        return false;
+        return server;
     }
 
     @Override
     protected void sendFile(String fileID, String chunkNo, byte[] fileContent) throws IOException {
-        int port = -1;
         if (socket == null) {
-            for (port = Constants.TCP_PORT; port < Constants.TCP_PORT + 1000; port++) {
-                if (isAvailable(port)) {
+            for (int port = Constants.TCP_PORT; port < Constants.TCP_PORT + 1000; port++) {
+                if ((socket = isAvailable(port)) != null) {
                     System.out.println("Found available port in " + port);
-                    socket = new ServerSocket(port);
                     break;
                 }
             }
