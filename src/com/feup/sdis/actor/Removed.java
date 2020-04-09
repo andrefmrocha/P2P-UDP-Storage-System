@@ -9,6 +9,7 @@ import com.feup.sdis.peer.Constants;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
@@ -51,11 +52,14 @@ public class Removed extends MessageActor {
             if (replCount.getSize(chunkId) < stored.getDesiredReplicationDegree()) {
                 System.out.println("Replication degree dropped below the desired level");
                 System.out.println("Starting backup protocol for chunk " + chunkId);
-                int replDeg = stored.getDesiredReplicationDegree();
 
                 try {
-                    Backup.sendPutChunk(new File(Constants.backupFolder + chunkId),
-                                        replDeg, scheduler);
+                    final byte[] chunk = Files.readAllBytes(new File(Constants.backupFolder + chunkId).toPath());
+                    Backup.sendPutChunk(stored.getFileID(),
+                                        chunk,
+                                        stored.getChunkNo(),
+                                        stored.getDesiredReplicationDegree(),
+                                        scheduler);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
