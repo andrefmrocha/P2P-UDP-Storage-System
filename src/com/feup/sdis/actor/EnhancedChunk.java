@@ -15,12 +15,16 @@ public class EnhancedChunk extends Chunk  {
 
     @Override
     public void process() throws IOException {
-        final String hostname = message.getHeader().getExtraParam();
-        if (hostname == null){
+        final String extraParam = message.getHeader().getExtraParam();
+        final String[] splitted = extraParam.split(":");
+        if (splitted.length != 2){
+            System.out.println("hostname:port not successfully found, exiting");
             return;
         }
+        final String hostname = splitted[0];
+        final int port = Integer.parseInt(splitted[1]);
 
-        final Socket socket = new Socket(hostname, Constants.TCP_PORT);
+        final Socket socket = new Socket(hostname, port);
         final PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         final DataInputStream in = new DataInputStream(socket.getInputStream());
         final String fileID = message.getHeader().getFileId();
