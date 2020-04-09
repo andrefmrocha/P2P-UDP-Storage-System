@@ -1,11 +1,19 @@
 #!/bin/bash
 
 # print usage
-if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 N_PEERS" >&2
+if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
+  echo "Usage: $0 N_PEERS <ENHANCED>" >&2
   echo "  N_PEERS is the number of peers to start"
   echo "  IDs will be assigned incrementally starting at 1"
+  echo "  ENHANCED is an optional flag signaling if the ENHANCED protocol should be used, 1 for true"
   exit 1
+fi
+
+# enhanced flag
+ENHANCED=''
+if [ "$#" == 2 -a "$2" == 1 ]; then
+  echo 'Using enhanced protocol'
+  ENHANCED="ENHANCED"
 fi
 
 # create ouput folder
@@ -16,7 +24,7 @@ N_PEERS=$1
 echo "Starting $N_PEERS peers"
 for (( id=1; id<=$N_PEERS; id++ ))
 do
-    (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $id > outputs/p$id.txt)&
+    (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $id $ENHANCED > outputs/p$id.txt)&
     pids[$id]=$!
 done
 
