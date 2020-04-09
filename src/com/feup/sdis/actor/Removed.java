@@ -36,12 +36,13 @@ public class Removed extends MessageActor {
 
         // update repl count on all peers
         final SerializableHashMap replCount = Store.instance().getReplCount();
-        if(replCount.contains(chunkId)) {
+        if(!replCount.contains(chunkId)) {
             System.out.println("[REMOVED] Did not find chunk in replCount");
             return;
         }
 
         replCount.removeID(chunkId, message.getHeader().getSenderId());
+        System.out.println("Updated replication table for chunk " + chunkId + ", removed peer " + message.getHeader().getSenderId());
 
         // if peer has copy of the chunk
         if (storedFiles.containsKey(chunkId)) {
