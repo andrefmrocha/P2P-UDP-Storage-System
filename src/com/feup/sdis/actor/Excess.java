@@ -21,7 +21,10 @@ public class Excess extends MessageActor {
 
     @Override
     public void process() {
-        if (!message.getHeader().getExtraParam().equals(Constants.SENDER_ID)) return;
+        if (!message.getHeader().getExtraParam().equals(Constants.SENDER_ID)) {
+            System.out.println("This was not target peer, ignoring Excess msg");
+            return;
+        }
         final String chunkId = message.getHeader().getChunkId();
         final File file = new File(Constants.backupFolder + chunkId);
         if (!file.delete()) {
@@ -30,6 +33,7 @@ public class Excess extends MessageActor {
 
         Store.instance().getReplCount().removeID(chunkId, Constants.SENDER_ID);
         Store.instance().getStoredFiles().remove(chunkId);
+        System.out.println("Deleted chunk " + chunkId);
     }
 
     @Override

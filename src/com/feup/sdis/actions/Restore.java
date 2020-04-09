@@ -10,15 +10,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 
 public class Restore implements Action {
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     private final File file;
     private BackupFileInfo backupFileInfo;
 
@@ -76,7 +73,7 @@ public class Restore implements Action {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }, 1, 1, TimeUnit.SECONDS);
+                }, 1, 3, TimeUnit.SECONDS);
             }
 
         } catch (IOException e) {

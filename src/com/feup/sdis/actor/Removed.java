@@ -19,7 +19,6 @@ import java.util.concurrent.ScheduledExecutorService;
 public class Removed extends MessageActor {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
     final static public String type = "REMOVED";
-    private final Random random = new Random();
 
     public Removed(Message message) {
         super(message);

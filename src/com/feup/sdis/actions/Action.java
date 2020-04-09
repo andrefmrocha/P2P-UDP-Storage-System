@@ -11,8 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public interface Action {
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+
     static String generateId(File file) {
         try {
             byte[] fileContent = Files.readAllBytes(file.toPath());

@@ -8,43 +8,51 @@ import com.feup.sdis.peer.Constants;
 import java.io.*;
 import java.net.Socket;
 
-public class EnhancedChunk extends Chunk  {
+public class EnhancedChunk extends Chunk {
     public EnhancedChunk(Message message) {
         super(message);
     }
 
     @Override
     public void process() throws IOException {
-        final String hostname = message.getHeader().getExtraParam();
-        if (hostname == null){
+        final String extraParam = message.getHeader().getExtraParam();
+        final String[] splitted = extraParam.split(":");
+        if (splitted.length != 2) {
+            System.out.println("hostname:port not successfully found, exiting");
             return;
         }
+        final String hostname = splitted[0];
+        final int port = Integer.parseInt(splitted[1]);
 
-        final Socket socket = new Socket(hostname, Constants.TCP_PORT);
-        final PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        final BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         final String fileID = message.getHeader().getFileId();
         final int chunkNo = Integer.parseInt(message.getHeader().getChunkNo());
         BackupFileInfo localInfo = Store.instance().getBackedUpFiles().get(fileID);
-        if (this.isFileBackedUp(localInfo)){
-            out.println("RDY");
-            out.flush();
-            if(!this.isChunkRestored(localInfo, chunkNo)){
-                StringBuilder builder = new StringBuilder();
-                String buffer;
-                while ((buffer = in.readLine()) != null){
-                    builder.append(buffer);
-                }
-                out.close();
-                //this.storeFile(builder.toString(), chunkNo, localInfo);
-                // TODO this is not implemented, commented out!!! must store as bytes
+        if(!isFileBackedUp(localInfo)) {
+            Store.instance().getChunksSent().add(message.getHeader().getChunkId());
+            System.out.println("This peer was not the Restore initiator");
+            return;
+        }
+        final Socket socket = new Socket(hostname, port);
+        final PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        final DataInputStream in = new DataInputStream(socket.getInputStream());
+
+        if (!this.initialChecks(chunkNo, localInfo)) {
+            socket.shutdownOutput();
+            final int length = in.readInt();
+            if (length > 0) {
+                final byte[] message = new byte[length];
+                in.readFully(message, 0, message.length);
+                this.storeFile(message, chunkNo, localInfo);
+            } else {
+                System.out.println("Read length " + length);
             }
+
         } else {
             out.println("N/N"); // Not-needed
             out.flush();
             out.close();
         }
-        while (in.readLine() != null);
+        while (!socket.isClosed() && in.read() != -1) ;
         in.close();
         socket.close();
     }
