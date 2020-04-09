@@ -17,7 +17,7 @@ public class Reclaim implements Action {
         if (args.length != 2) {
             throw new MessageError("Wrong number of parameters!");
         }
-        Store.instance().setMaxDiskSpace(Integer.parseInt(args[1]));
+        Store.instance().setMaxDiskSpace(Integer.parseInt(args[1]) * 1000); // kb to bytes
     }
 
     @Override
