@@ -41,7 +41,7 @@ public class Reclaim implements Action {
                 // Must remove
                 try {
                     final MulticastSocket socket = new MulticastSocket(Constants.MC_PORT);
-                    final InetAddress group = InetAddress.getByName(Constants.MDR_CHANNEL);
+                    final InetAddress group = InetAddress.getByName(Constants.MC_CHANNEL);
                     socket.joinGroup(group);
                     socket.setTimeToLive(Constants.MC_TTL);
                     socket.setSoTimeout(Constants.MC_TIMEOUT);

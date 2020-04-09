@@ -36,7 +36,7 @@ public class Removed extends MessageActor {
 
         // update repl count on all peers
         final SerializableHashMap replCount = Store.instance().getReplCount();
-        if(replCount.contains(chunkId)) {
+        if(!replCount.contains(chunkId)) {
             System.out.println("[REMOVED] Did not find chunk in replCount");
             return;
         }
