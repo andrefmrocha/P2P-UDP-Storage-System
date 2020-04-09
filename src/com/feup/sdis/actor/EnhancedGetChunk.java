@@ -15,7 +15,7 @@ public class EnhancedGetChunk extends GetChunk {
         super(message);
     }
 
-    private static ServerSocket socket;
+    private ServerSocket socket;
 
 
     public ServerSocket isAvailable(int port) {
@@ -23,6 +23,7 @@ public class EnhancedGetChunk extends GetChunk {
         DatagramSocket datagramSocket = null;
         try {
             server = new ServerSocket(port);
+            server.setReuseAddress(true);
             datagramSocket = new DatagramSocket(port);
             datagramSocket.setReuseAddress(true);
         } catch (IOException e) {
@@ -56,19 +57,19 @@ public class EnhancedGetChunk extends GetChunk {
                 Chunk.type, Constants.SENDER_ID,
                 fileID, Integer.parseInt(chunkNo), -1,
                 InetAddress.getLocalHost().getHostAddress() + ":" + socket.getLocalPort());
-        this.sendMessage(Constants.MC_PORT, Constants.MDR_CHANNEL, new Message(sendingHeader));
-
+        if (! this.sendGetChunk(Constants.MC_PORT, Constants.MDR_CHANNEL, new Message(sendingHeader)))
+            return;
 
         final Socket client = socket.accept();
         final DataOutputStream out = new DataOutputStream(client.getOutputStream());
         final BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        if (in.readLine().equals("RDY")) {
+        if (in.readLine() == null) {
             out.writeInt(fileContent.length);
             out.write(fileContent);
+            out.flush();
         }
-        out.flush();
-        out.close();
         while (!client.isClosed() && in.readLine() != null) ;
+        out.close();
         in.close();
         client.close();
     }

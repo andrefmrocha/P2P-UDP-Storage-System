@@ -12,6 +12,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.file.Files;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class GetChunk extends MessageActor {
@@ -32,7 +34,7 @@ public class GetChunk extends MessageActor {
         final String chunkNo = message.getHeader().getChunkNo();
         final String chunkId = message.getHeader().getChunkId();
 
-        if(!Store.instance().getStoredFiles().containsKey(chunkId)) {
+        if (!Store.instance().getStoredFiles().containsKey(chunkId)) {
             System.out.println("Do not have chunk " + chunkId + " stored");
             return;
         }
@@ -49,26 +51,35 @@ public class GetChunk extends MessageActor {
                 fileID, Integer.parseInt(chunkNo));
 
         final Message msg = new Message(sendingHeader, fileContent);
-        this.sendMessage(Constants.MC_PORT, Constants.MDR_CHANNEL, msg);
+        this.sendGetChunk(Constants.MC_PORT, Constants.MDR_CHANNEL, msg);
     }
 
-    @Override
-    protected void sendMessage(int port, String groupChannel, Message msg) {
-        scheduler.schedule(() -> {
-            try {
-                final String chunkId = message.getHeader().getChunkId();
-                if (Store.instance().getChunksSent().contains(chunkId)){
-                    System.out.println("Chunk " + chunkId + " has already been sent");
-                }
+    protected boolean sendGetChunk(int port, String groupChannel, Message msg) {
+        try {
+            return scheduler.schedule(() -> {
+                try {
+                    final String chunkId = message.getHeader().getChunkId();
+                    if (Store.instance().getChunksSent().contains(chunkId)) {
+                        System.out.println("Chunk " + chunkId + " has already been sent");
+                        return false;
+                    }
 
-                final InetAddress group = InetAddress.getByName(groupChannel);
-                final MulticastSocket socket = SocketFactory.buildMulticastSocket(port, group);
-                final DatagramPacket datagramPacket = msg.generatePacket(group, Constants.MC_PORT);
-                socket.send(datagramPacket);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }, random.nextInt(400 + 1), TimeUnit.MILLISECONDS);
+                    final InetAddress group = InetAddress.getByName(groupChannel);
+                    final MulticastSocket socket = SocketFactory.buildMulticastSocket(port, group);
+                    final DatagramPacket datagramPacket = msg.generatePacket(group, Constants.MC_PORT);
+                    socket.send(datagramPacket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
+
+            }, random.nextInt(400 + 1), TimeUnit.MILLISECONDS).get();
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

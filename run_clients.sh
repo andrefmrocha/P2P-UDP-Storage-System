@@ -20,8 +20,8 @@ run_client()
 }
 
 # start processes
-run_client 1 BACKUP README.md 3
-run_client 1 RESTORE README.md
+run_client 1 BACKUP meias.txt 3
+run_client 1 RESTORE meias.txt
 #run_client 2 RECLAIM 0
 #run_client 2 RECLAIM 10000
 #run_client 3 RECLAIM 0

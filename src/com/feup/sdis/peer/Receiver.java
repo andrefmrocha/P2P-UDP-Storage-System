@@ -42,6 +42,7 @@ public abstract class Receiver implements Runnable {
                         MessageActor actor = this.parseMessage(packet);
                         actor.process();
                     } catch (IOException | MessageError e) {
+                        System.err.println("Error in peer " + Constants.SENDER_ID);
                         e.printStackTrace();
                     }
                 });
