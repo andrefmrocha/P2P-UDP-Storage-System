@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 public class Reclaim implements Action {
 
@@ -29,14 +26,17 @@ public class Reclaim implements Action {
         int maxDiskSpace = Store.instance().getMaxDiskSpace();
         int usedSize = 0;
 
+        // sort by chunk size
         SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
+        List<Map.Entry<String, StoredChunkInfo>> list = new LinkedList<>(storedFiles.entrySet());
+        list.sort(Comparator.comparingInt(t -> t.getValue().getChunkSize()));
+
         List<String> storedFilesToRemove = new ArrayList<>();
-        for(Map.Entry<String,StoredChunkInfo> entry : storedFiles.entrySet()) {
+        for(Map.Entry<String,StoredChunkInfo> entry : list) {
             final String chunkID = entry.getKey();
             StoredChunkInfo chunkInfo = entry.getValue();
-            // chunks have the same size
-            usedSize += chunkInfo.getChunkSize();
 
+            usedSize += chunkInfo.getChunkSize();
             if (usedSize > maxDiskSpace) {
                 // Must remove
                 try {

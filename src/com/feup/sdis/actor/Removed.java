@@ -42,6 +42,7 @@ public class Removed extends MessageActor {
         }
 
         replCount.removeID(chunkId, message.getHeader().getSenderId());
+        System.out.println("Updated replication table for chunk " + chunkId + ", removed peer " + message.getHeader().getSenderId());
 
         // if peer has copy of the chunk
         if (storedFiles.containsKey(chunkId)) {

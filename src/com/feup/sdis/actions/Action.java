@@ -26,7 +26,7 @@ public interface Action {
         catch (NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
         }
-        return  Integer.toString((fileContent + Constants.SENDER_ID).hashCode());
+        return Integer.toString((fileContent + Constants.SENDER_ID).hashCode());
     }
 
     String process();
