@@ -24,7 +24,7 @@ N_PEERS=$1
 echo "Starting $N_PEERS peers"
 for (( id=1; id<=$N_PEERS; id++ ))
 do
-    (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $id $ENHANCED >> outputs/p$id.txt)&
+    (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $id $ENHANCED &>> outputs/p$id.txt)&
     pids[$id]=$!
 done
 

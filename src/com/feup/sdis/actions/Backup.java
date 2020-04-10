@@ -73,7 +73,7 @@ class Task implements Runnable {
 public class Backup implements Action {
     private final File sendingFile;
     private final int replDeg;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(20);
 
     public Backup(String[] args) throws MessageError {
         if (args.length != 3) {
@@ -109,7 +109,7 @@ public class Backup implements Action {
         final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
         final String chunkId = message.getHeader().getChunkId();
         scheduler.schedule(
-                new Task(0, chunkId, replDeg, datagramPacket, socket, scheduler, chunkNo), 1, TimeUnit.SECONDS);
+                new Task(0, chunkId, replDeg, datagramPacket, socket, scheduler, chunkNo), 0, TimeUnit.SECONDS);
     }
 
     public static void sendPutChunk(String fileId, byte[] chunk, int chunkNo, int replDeg) throws IOException {

@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,6 +21,7 @@ import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 public class Restore implements Action {
     private final File file;
     private BackupFileInfo backupFileInfo;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(20);
 
     public Restore(String[] args) throws MessageError {
         if (args.length != 2) {
@@ -75,7 +78,7 @@ public class Restore implements Action {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }, 1, 3, TimeUnit.SECONDS);
+                }, 0, 3, TimeUnit.SECONDS);
             }
 
         } catch (IOException e) {

@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public interface Action {
-    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
     static String generateId(File file) {
         try {

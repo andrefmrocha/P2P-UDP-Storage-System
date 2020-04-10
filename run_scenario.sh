@@ -28,12 +28,6 @@ stop_peers() {
   rm $FIFO_PATH
 }
 
-run_peer()
-{
-  (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $1 $2 > outputs/p$id.txt)&
-  echo "$!"
-}
-
 get_state()
 {
   for (( arg=1; arg<="$#"; arg++ ))
@@ -155,7 +149,6 @@ elif [ $SCENARIO == 4 ]; then
   sleep 2
 
   stop_peers
-  sleep 0.5
 
 else
   echo 'Invalid scenario specified'

@@ -22,6 +22,7 @@ import static com.feup.sdis.peer.Constants.BLOCK_SIZE;
 public class Delete implements Action {
     private final File file;
     private static final Random random = new Random();
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(20);
 
     public Delete(String[] args) throws MessageError {
         if (args.length != 2) {
