@@ -25,6 +25,12 @@ run_client()
   java -cp out/production/sdis1920-t1g02/ com.feup.sdis.client.Client $peer_ap $sub_protocol $opnd_1 $opnd_2 >> outputs/clients.txt
 }
 
+run_peer()
+{
+  (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $1 $2 > outputs/p$id.txt)&
+  echo "$!"
+}
+
 get_state()
 {
   for (( arg=1; arg<="$#"; arg++ ))
@@ -98,6 +104,11 @@ elif [ $SCENARIO == 3 ]; then
   sleep 1
 
   get_state 1 2 3 4 5
+
+# test deletion with peer down at first
+elif [ $SCENARIO == 4 ]; then
+  p1=$( run_peer 100 ENHANCED )
+  p2=$( run_peer 101 ENHANCED )
 else
   echo 'Invalid scenario specified'
 fi
