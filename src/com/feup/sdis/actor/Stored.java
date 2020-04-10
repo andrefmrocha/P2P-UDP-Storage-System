@@ -34,6 +34,8 @@ public class Stored extends MessageActor {
             }
 
         }
+        else
+            System.out.println("Peer is already in replication table");
     }
 
     private void removeExcess(String senderPeerId) {

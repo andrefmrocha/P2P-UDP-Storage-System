@@ -38,7 +38,7 @@ public class Client {
             System.out.println("@ Sending message to peer " + peerAp + ": " + msg);
             answer = stub.processMsg(msg);
         } catch (MessageError messageError) {
-            messageError.printStackTrace();
+            System.out.println(messageError.getErrorMsg());
         }
         System.out.println("@ Received answer:");
         System.out.println(answer + "\n");

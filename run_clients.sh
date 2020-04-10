@@ -55,28 +55,28 @@ if [ $SCENARIO == 1 ]; then
 elif [ $SCENARIO == 2 ]; then
   run_client 1 BACKUP t3-cityplan.zip 3
   sleep 2
-  get_state 1 2 3
+  get_state 1 2 3 4 5
 
   run_client 2 RECLAIM 64
   sleep 2
-  get_state 1 2 3
+  get_state 1 2 3 4 5
 
   run_client 2 RECLAIM 0
   sleep 2
-  get_state 1 2 3
+  get_state 1 2 3 4 5
 
   run_client 2 RECLAIM 64000
   sleep 2
-  get_state 1 2 3
+  get_state 1 2 3 4 5
 
   run_client 3 RECLAIM 0
   sleep 4
-  get_state 1 2 3
+  get_state 1 2 3 4 5
 
   run_client 1 RECLAIM 0
   run_client 2 RECLAIM 0
   sleep 4
-  get_state 1 2 3
+  get_state 1 2 3 4 5
 
 # backup same file on different peers
 elif [ $SCENARIO == 3 ]; then

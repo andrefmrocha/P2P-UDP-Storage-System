@@ -30,7 +30,7 @@ public class BSDispatcher implements Dispatcher {
                 action = new Reclaim(args);
                 break;
             default:
-                throw new MessageError("Wrong RMI message received!");
+                throw new MessageError("Received unknown RMI message");
         }
         return action.process();
     }
