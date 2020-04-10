@@ -125,6 +125,7 @@ public class Backup implements Action {
 
     @Override
     public String process() {
+
         if (!sendingFile.exists()) {
             System.out.println("Failed to find file!");
             return "Failed to find file!";
@@ -132,6 +133,12 @@ public class Backup implements Action {
         try {
             final byte[] fileContent = Files.readAllBytes(sendingFile.toPath());
             final String fileId = Action.generateId(fileContent, sendingFile.lastModified());
+
+            if (Store.instance().getBackedUpFiles().containsKey(fileId)) {
+                System.out.println("File is already backed up");
+                return "File is already backed up";
+            }
+
             Backup.sendPutChunks(fileId, fileContent, this.replDeg, scheduler);
 
             final int numChunks = (int) Math.ceil(fileContent.length / (double) BLOCK_SIZE);

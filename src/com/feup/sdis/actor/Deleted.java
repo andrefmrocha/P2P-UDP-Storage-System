@@ -25,7 +25,6 @@ public class Deleted extends MessageActor {
             replCounter.removeID(chunkId, peerId);
             System.out.println("Updated replication table for chunk " + chunkId + ", removed peer " + peerId);
         }
-
     }
 
     @Override

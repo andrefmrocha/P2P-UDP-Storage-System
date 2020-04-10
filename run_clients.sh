@@ -78,13 +78,24 @@ elif [ $SCENARIO == 2 ]; then
   sleep 4
   get_state 1 2 3
 
-# backup same file
+# backup same file on different peers
 elif [ $SCENARIO == 3 ]; then
   run_client 1 BACKUP t3-cityplan.zip 3
   sleep 2
 
   run_client 1 BACKUP t3-cityplan.zip 3
   sleep 2
+
+  run_client 5 DELETE t3-cityplan.zip
+  sleep 1
+
+  run_client 5 BACKUP t3-cityplan.zip 3
+  sleep 2
+
+  get_state 1 2 3 4 5
+
+  run_client 5 DELETE t3-cityplan.zip
+  sleep 1
 
   get_state 1 2 3 4 5
 else
