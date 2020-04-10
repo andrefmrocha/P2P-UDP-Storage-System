@@ -1,28 +1,31 @@
 #!/bin/bash
 
 # print usage
-if [ "$#" -gt 1 ]; then
-  echo "Usage: $0 <SCENARIO>" >&2
-  echo "  SCENARIO is an optional parameter specifying the execution scenario to run"
-  echo "  default value is 1"
+if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
+  echo "Usage: $0 SCENARIO <ENHANCED>" >&2
+  echo "  SCENARIO specifies the execution scenario to run"
+  echo "  Valid values start at 0"
+  echo "  ENHANCED is an optional flag that specifies whether peers should be enhanced, 1 for true"
   exit 1
 fi
 
-SCENARIO=1
-if [ "$#" == 1 ]; then
-  SCENARIO=$1
-fi
+SCENARIO=$1
+ENHANCED=$2
 
-mkdir outputs &> /dev/null
+run_client() {
+  ./run_client.sh $1 $2 $3 $4 &> /dev/null
+}
 
-# java TestApp <peer_ap> <sub_protocol> <opnd_1> <opnd_2>
-run_client()
-{
-  peer_ap=$1
-  sub_protocol=$2
-  opnd_1=$3
-  opnd_2=$4
-  java -cp out/production/sdis1920-t1g02/ com.feup.sdis.client.Client $peer_ap $sub_protocol $opnd_1 $opnd_2 >> outputs/clients.txt
+FIFO_PATH='/tmp/sdis_proj1.fifo'
+run_peers() {
+  mkfifo $FIFO_PATH
+  (cat $FIFO_PATH | ./run_peers.sh $1 $2 &> /dev/null)&
+}
+
+stop_peers() {
+  echo 'q' > $FIFO_PATH
+  sleep 0.1
+  rm $FIFO_PATH
 }
 
 run_peer()
@@ -39,9 +42,24 @@ get_state()
   done
 }
 
+clean_peers_folders()
+{
+  rm -rf ./outputs
+  rm -rf ./peers
+}
+
+clean_peers_folders
+mkdir outputs &> /dev/null
+
+# state
+if [ $SCENARIO == 0 ]; then
+  get_state 1 2 3 4 5
 
 # backup, restore and then delete
-if [ $SCENARIO == 1 ]; then
+elif [ $SCENARIO == 1 ]; then
+  run_peers 5 $ENHANCED
+  sleep 1
+
   run_client 1 BACKUP t3-cityplan.zip 3
   sleep 2
 
@@ -57,8 +75,14 @@ if [ $SCENARIO == 1 ]; then
   sleep 2
   get_state 1 2 3 4 5
 
+  sleep 2
+  stop_peers
+
 # reclaim tests
 elif [ $SCENARIO == 2 ]; then
+  run_peers 5 $ENHANCED
+  sleep 1
+
   run_client 1 BACKUP t3-cityplan.zip 3
   sleep 2
   get_state 1 2 3 4 5
@@ -84,8 +108,14 @@ elif [ $SCENARIO == 2 ]; then
   sleep 4
   get_state 1 2 3 4 5
 
+  sleep 2
+  stop_peers
+
 # backup same file on different peers
 elif [ $SCENARIO == 3 ]; then
+  run_peers 5 $ENHANCED
+  sleep 1
+
   run_client 1 BACKUP t3-cityplan.zip 3
   sleep 2
 
@@ -105,10 +135,12 @@ elif [ $SCENARIO == 3 ]; then
 
   get_state 1 2 3 4 5
 
+  sleep 2
+  stop_peers
+
 # test deletion with peer down at first
 elif [ $SCENARIO == 4 ]; then
-  p1=$( run_peer 100 ENHANCED )
-  p2=$( run_peer 101 ENHANCED )
+  run_client 1 BACKUP t3-cityplan.zip 3
 else
   echo 'Invalid scenario specified'
 fi
