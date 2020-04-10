@@ -105,6 +105,6 @@ public class Header {
         return version + " " + messageType +
                 " " + senderId + " " + fileId + " " +
                 (chunkNo.equals("-1") ? "" : chunkNo) + " " + (replicationDeg == -1 ? "" : replicationDeg) +
-                ((extraParam == null) ? "" : (extraParam)) + "\n\r";
+                ((extraParam == null) ? "" : (extraParam)) + "\r\n";
     }
 }

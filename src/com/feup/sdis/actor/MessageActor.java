@@ -26,7 +26,7 @@ public abstract class MessageActor {
     }
 
     public static byte[] parseBody(String msg, byte[] msgBytes) {
-        final int sliceI = msg.indexOf("\n\r\n\r") + 4;
+        final int sliceI = msg.indexOf("\r\n\r\n") + 4;
         return Arrays.copyOfRange(msgBytes, sliceI, msgBytes.length);
     }
 

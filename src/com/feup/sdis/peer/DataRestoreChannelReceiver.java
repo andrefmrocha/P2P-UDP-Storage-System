@@ -15,7 +15,7 @@ public class DataRestoreChannelReceiver extends Receiver {
         final String msg = new String(packet.getData(), 0, packet.getLength());
         byte[] msgBytes = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
 
-        final String headerMsg = msg.substring(0, msg.indexOf("\n\r"));
+        final String headerMsg = msg.substring(0, msg.indexOf("\r\n"));
         final Header header = Header.parseHeader(headerMsg);
         MessageActor messageActor;
 
