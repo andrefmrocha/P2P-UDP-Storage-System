@@ -2,6 +2,7 @@ package com.feup.sdis.model;
 
 import com.feup.sdis.actor.Chunk;
 import com.feup.sdis.actor.Excess;
+import com.feup.sdis.actor.GetChunk;
 import com.feup.sdis.peer.Constants;
 
 public class Header {
@@ -76,7 +77,7 @@ public class Header {
         if (args.length >= 5)
             chunkNo = Integer.parseInt(args[4]);
         if (args.length == 6){
-            if((args[1].equals(Chunk.type) && args[0].equals(Constants.enhancedVersion))
+            if((args[1].equals(GetChunk.type) && args[0].equals(Constants.enhancedVersion))
                 || args[1].equals(Excess.type))
                 extraParam = args[5];
             else

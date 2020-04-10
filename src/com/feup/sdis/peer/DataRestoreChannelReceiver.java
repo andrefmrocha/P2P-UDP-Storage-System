@@ -1,7 +1,6 @@
 package com.feup.sdis.peer;
 
 import com.feup.sdis.actor.Chunk;
-import com.feup.sdis.actor.EnhancedChunk;
 import com.feup.sdis.actor.MessageActor;
 import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
@@ -21,10 +20,7 @@ public class DataRestoreChannelReceiver extends Receiver {
         MessageActor messageActor;
 
         if (Chunk.type.equals(header.getMessageType())) {
-            if (header.getVersion().equals("1.0"))
-                messageActor = new Chunk(new Message(header, MessageActor.parseBody(msg, msgBytes)));
-            else
-                messageActor = new EnhancedChunk(new Message(header, MessageActor.parseBody(msg, msgBytes)));
+            messageActor = new Chunk(new Message(header, MessageActor.parseBody(msg, msgBytes)));
         } else {
             throw new MessageError("Unexpected message type: " + header.getMessageType());
         }

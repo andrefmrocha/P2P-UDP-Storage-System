@@ -37,7 +37,7 @@ public class Chunk extends MessageActor {
         storeFile(chunkContent, chunkNo, localInfo);
     }
 
-    public synchronized boolean initialChecks(int chunkNo, BackupFileInfo localInfo) {
+    static public synchronized boolean initialChecks(int chunkNo, BackupFileInfo localInfo) {
 
         if(localInfo.isFullyRestored()) {
             System.out.println("File is already fully restored");
@@ -52,7 +52,7 @@ public class Chunk extends MessageActor {
         return false;
     }
 
-    protected void storeFile(byte[] chunkContent, int chunkNo, BackupFileInfo localInfo) throws IOException {
+    static public void storeFile(byte[] chunkContent, int chunkNo, BackupFileInfo localInfo) throws IOException {
         String fileID = localInfo.getfileID();
         System.out.println("Storing chunk no. " + chunkNo + " for file " + fileID);
         localInfo.getRestoredChunks().put(chunkNo, chunkContent);
@@ -69,11 +69,11 @@ public class Chunk extends MessageActor {
         }
     }
 
-    protected synchronized boolean isChunkRestored(BackupFileInfo localInfo, int chunkNo) {
+    static protected synchronized boolean isChunkRestored(BackupFileInfo localInfo, int chunkNo) {
         return localInfo.getRestoredChunks().get(chunkNo) != null;
     }
 
-    protected synchronized boolean isFileBackedUp(BackupFileInfo localInfo) {
+    static public synchronized boolean isFileBackedUp(BackupFileInfo localInfo) {
         return localInfo != null;
     }
 
