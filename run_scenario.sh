@@ -4,7 +4,7 @@
 if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
   echo "Usage: $0 SCENARIO <ENHANCED>" >&2
   echo "  SCENARIO specifies the execution scenario to run"
-  echo "  Valid values start at 0"
+  echo "  Valid values start at 1"
   echo "  ENHANCED is an optional flag that specifies whether peers should be enhanced, 1 for true"
   exit 1
 fi
@@ -51,27 +51,23 @@ clean_peers_folders()
 clean_peers_folders
 mkdir outputs &> /dev/null
 
-# state
-if [ $SCENARIO == 0 ]; then
-  get_state 1 2 3 4 5
-
 # backup, restore and then delete
-elif [ $SCENARIO == 1 ]; then
+if [ $SCENARIO == 1 ]; then
   run_peers 5 $ENHANCED
   sleep 1
 
-  run_client 1 BACKUP t3-cityplan.zip 3
+  run_client 1 BACKUP testfile.txt 3
   sleep 2
 
-  run_client 1 RESTORE t3-cityplan.zip
-  run_client 2 RESTORE t3-cityplan.zip
+  run_client 1 RESTORE testfile.txt
+  run_client 2 RESTORE testfile.txt
   run_client 2 RESTORE t3-citasdyplan.zip
   sleep 2
   get_state 1 2 3 4 5
 
   run_client 1 DELETE README.md
   run_client 1 DELETE READasdME.md
-  run_client 1 DELETE t3-cityplan.zip
+  run_client 1 DELETE testfile.txt
   sleep 2
   get_state 1 2 3 4 5
 
@@ -83,7 +79,7 @@ elif [ $SCENARIO == 2 ]; then
   run_peers 5 $ENHANCED
   sleep 1
 
-  run_client 1 BACKUP t3-cityplan.zip 3
+  run_client 1 BACKUP testfile.txt 3
   sleep 2
   get_state 1 2 3 4 5
 
@@ -116,21 +112,21 @@ elif [ $SCENARIO == 3 ]; then
   run_peers 5 $ENHANCED
   sleep 1
 
-  run_client 1 BACKUP t3-cityplan.zip 3
+  run_client 1 BACKUP testfile.txt 3
   sleep 2
 
-  run_client 1 BACKUP t3-cityplan.zip 3
+  run_client 1 BACKUP testfile.txt 3
   sleep 2
 
-  run_client 5 DELETE t3-cityplan.zip
+  run_client 5 DELETE testfile.txt
   sleep 1
 
-  run_client 5 BACKUP t3-cityplan.zip 3
+  run_client 5 BACKUP testfile.txt 3
   sleep 2
 
   get_state 1 2 3 4 5
 
-  run_client 5 DELETE t3-cityplan.zip
+  run_client 5 DELETE testfile.txt
   sleep 1
 
   get_state 1 2 3 4 5
@@ -138,9 +134,29 @@ elif [ $SCENARIO == 3 ]; then
   sleep 2
   stop_peers
 
-# test deletion with peer down at first
+# test repl counter info is kept between executions
 elif [ $SCENARIO == 4 ]; then
-  run_client 1 BACKUP t3-cityplan.zip 3
+  run_peers 5 $ENHANCED
+  sleep 0.5
+
+  run_client 1 BACKUP testfile.txt 3
+  sleep 2
+
+  run_client 1 BACKUP testfile.txt 3
+  sleep 2
+
+  stop_peers
+  sleep 0.5
+
+  run_peers 5 $ENHANCED
+  sleep 0.5
+
+  run_client 1 BACKUP testfile.txt 3
+  sleep 2
+
+  stop_peers
+  sleep 0.5
+
 else
   echo 'Invalid scenario specified'
 fi

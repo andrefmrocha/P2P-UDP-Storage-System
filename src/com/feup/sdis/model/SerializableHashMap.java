@@ -1,15 +1,19 @@
 package com.feup.sdis.model;
 
+import com.feup.sdis.peer.Constants;
+
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SerializableHashMap {
 
-    private ObjectOutputStream objectOutputStream;
+    private String filename;
     private Map<String, Set<String>> files = new ConcurrentHashMap<>();
 
     SerializableHashMap(String filename) {
+        this.filename = filename;
         final File hashFile = new File(filename);
         try {
             if (!hashFile.exists())
@@ -25,20 +29,17 @@ public class SerializableHashMap {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
-            try {
-                final FileOutputStream outputStream = new FileOutputStream(filename);
-                this.objectOutputStream = new ObjectOutputStream(outputStream);
-                objectOutputStream.writeObject(files);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            updateObject();
         }
     }
 
     private synchronized void updateObject(){
         try {
+            final FileOutputStream outputStream = new FileOutputStream(filename);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
             objectOutputStream.writeObject(files);
             objectOutputStream.flush();
+            objectOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

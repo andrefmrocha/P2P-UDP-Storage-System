@@ -24,7 +24,14 @@ public class EnhancedGetChunk extends GetChunk {
         final String hostname = splitted[0];
         final int port = Integer.parseInt(splitted[1]);
 
-        final Socket client = new Socket(hostname, port);
+        Socket client;
+        try {
+            client = new Socket(hostname, port);
+        }
+        catch (IOException e) {
+            System.out.println("Chunk " + chunkNo + " of file " + fileID + " has already been sent");
+            return;
+        }
         final DataOutputStream out = new DataOutputStream(client.getOutputStream());
         final BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         if (in.readLine() == null) {

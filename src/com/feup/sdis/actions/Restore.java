@@ -148,6 +148,7 @@ public class Restore implements Action {
                 while (in.read() != -1) ;
                 client.shutdownInput();
                 client.close();
+                finalSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
