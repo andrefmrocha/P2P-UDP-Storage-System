@@ -1,13 +1,11 @@
 package com.feup.sdis.actor;
 
-import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
-import com.feup.sdis.peer.Constants;
 
-import java.io.*;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class EnhancedGetChunk extends GetChunk {
