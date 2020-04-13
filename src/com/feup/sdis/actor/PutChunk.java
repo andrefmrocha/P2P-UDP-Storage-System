@@ -59,7 +59,7 @@ public class PutChunk extends MessageActor {
         store.getStoredFiles().put(chunkId, new StoredChunkInfo(fileID, desiredReplicationDegree, chunkNo, chunkSize));
 
         // update own replication count
-        final SerializableHashMap replCounter = Store.instance().getReplCount();
+        final ReplicationCounter replCounter = Store.instance().getReplCount();
         replCounter.addNewID(chunkId, Constants.SENDER_ID);
 
         // write chunk to disk

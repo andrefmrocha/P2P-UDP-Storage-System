@@ -1,6 +1,7 @@
 package com.feup.sdis.actions;
 
 import com.feup.sdis.model.BackupFileInfo;
+import com.feup.sdis.model.SerializableHashMap;
 import com.feup.sdis.model.Store;
 import com.feup.sdis.model.StoredChunkInfo;
 import com.feup.sdis.peer.Constants;
@@ -12,7 +13,7 @@ import java.util.SortedMap;
 public class State implements Action {
     @Override
     public String process() {
-        final SortedMap<String, BackupFileInfo> backedFiles = Store.instance().getBackedUpFiles();
+        final SerializableHashMap<BackupFileInfo> backedFiles = Store.instance().getBackedUpFiles();
         String message = "Peer " + Constants.SENDER_ID + "\n";
         message += "Backed up files: " + (backedFiles.size() == 0 ? "NONE" : backedFiles.size()) + "\n";
         for(Map.Entry<String, BackupFileInfo> entry : backedFiles.entrySet()) {
@@ -30,7 +31,7 @@ public class State implements Action {
             }
         }
 
-        final SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
+        final SerializableHashMap<StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
         message += "Stored chunks: " + (storedFiles.size() == 0 ? "NONE" : storedFiles.size()) + "\n";
         for (Map.Entry<String, StoredChunkInfo> entry: storedFiles.entrySet()){
             message += "  - " + entry.getKey() + "\n";

@@ -27,7 +27,7 @@ public class Reclaim implements Action {
         int usedSize = 0;
 
         // sort by chunk size
-        SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
+        SerializableHashMap<StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
         List<Map.Entry<String, StoredChunkInfo>> list = new LinkedList<>(storedFiles.entrySet());
         list.sort(Comparator.comparingInt(t -> t.getValue().getChunkSize()));
 

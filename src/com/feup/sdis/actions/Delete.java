@@ -89,7 +89,7 @@ public class Delete implements Action {
                     throw new RuntimeException();
 
                 try {
-                    System.out.println("Sending DELETE message for file " + fileID);
+                    System.out.println("Sending DELETE message for file " + fileID + ", attempt " + tries + "/" + Constants.MAX_DELETE_TRIES);
                     socket.send(msg.generatePacket(group, Constants.MC_PORT));
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -101,7 +101,7 @@ public class Delete implements Action {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "Deleted file";
+        return "Successfully requested DELETE";
     }
 
     private boolean checkReplications(String fileID, int numChunks) {
@@ -118,7 +118,7 @@ public class Delete implements Action {
     }
 
     public static void deleteFileChunks(String fileID, int desiredReplDegree, String protocolVersion, ScheduledExecutorService scheduler) {
-        final SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
+        final SerializableHashMap<StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
         List<String> storedFilesToRemove = new ArrayList<>();
         for(Map.Entry<String, StoredChunkInfo> entry : storedFiles.entrySet()) {
             String chunkId = entry.getKey();

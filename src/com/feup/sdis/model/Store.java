@@ -2,14 +2,16 @@ package com.feup.sdis.model;
 
 import com.feup.sdis.peer.Constants;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class Store {
     private static Store storeInstance;
-    final private SerializableHashMap replCount = new SerializableHashMap(Constants.peerRootFolder + "files.ser");
-    final private SortedMap<String, BackupFileInfo> backedUpFiles = new ConcurrentSkipListMap<>();
-    final private SortedMap<String, StoredChunkInfo> storedFiles = new ConcurrentSkipListMap<>();
+    final private ReplicationCounter replCount = new ReplicationCounter(Constants.peerRootFolder + "repl.ser");
+    final private SerializableHashMap<BackupFileInfo> backedUpFiles = new SerializableHashMap<>(Constants.peerRootFolder + "backed.ser");
+    final private SerializableHashMap<StoredChunkInfo> storedFiles = new SerializableHashMap<>(Constants.peerRootFolder + "stored.ser");
     final private Set<String> chunksSent = Collections.synchronizedSet(new HashSet<>());
     private int maxDiskSpace = Constants.unlimitedDiskSpace;
 
@@ -22,11 +24,11 @@ public class Store {
         return storeInstance;
     }
 
-    public synchronized SortedMap<String, BackupFileInfo> getBackedUpFiles() { return backedUpFiles; }
-    public synchronized SerializableHashMap getReplCount() {
+    public synchronized SerializableHashMap<BackupFileInfo> getBackedUpFiles() { return backedUpFiles; }
+    public synchronized ReplicationCounter getReplCount() {
         return replCount;
     }
-    public synchronized SortedMap<String, StoredChunkInfo> getStoredFiles() {
+    public synchronized SerializableHashMap<StoredChunkInfo>getStoredFiles() {
         return storedFiles;
     }
 

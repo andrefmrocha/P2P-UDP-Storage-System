@@ -1,10 +1,7 @@
 package com.feup.sdis.actor;
 
 import com.feup.sdis.actions.Backup;
-import com.feup.sdis.model.Message;
-import com.feup.sdis.model.SerializableHashMap;
-import com.feup.sdis.model.Store;
-import com.feup.sdis.model.StoredChunkInfo;
+import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 
 import java.io.File;
@@ -32,10 +29,10 @@ public class Removed extends MessageActor {
     @Override
     public void process() {
         final String chunkId = message.getHeader().getChunkId();
-        final SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
+        final SerializableHashMap<StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
 
         // update repl count on all peers
-        final SerializableHashMap replCount = Store.instance().getReplCount();
+        final ReplicationCounter replCount = Store.instance().getReplCount();
         if(!replCount.contains(chunkId)) {
             System.out.println("[REMOVED] Did not find chunk in replCount");
             return;

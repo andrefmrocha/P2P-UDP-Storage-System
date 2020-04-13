@@ -1,9 +1,10 @@
 package com.feup.sdis.model;
 
+import java.io.Serializable;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-public class BackupFileInfo {
+public class BackupFileInfo implements Serializable {
 
     final private String fileID;
     final private String originalFilename;
