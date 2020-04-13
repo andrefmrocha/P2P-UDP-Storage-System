@@ -118,7 +118,7 @@ public class Delete implements Action {
     }
 
     public static void deleteFileChunks(String fileID, int desiredReplDegree, String protocolVersion, ScheduledExecutorService scheduler) {
-        final SortedMap<String, StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
+        final SerializableHashMap<StoredChunkInfo> storedFiles = Store.instance().getStoredFiles();
         List<String> storedFilesToRemove = new ArrayList<>();
         for(Map.Entry<String, StoredChunkInfo> entry : storedFiles.entrySet()) {
             String chunkId = entry.getKey();

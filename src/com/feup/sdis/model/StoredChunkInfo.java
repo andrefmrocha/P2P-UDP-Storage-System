@@ -1,6 +1,8 @@
 package com.feup.sdis.model;
 
-public class StoredChunkInfo {
+import java.io.Serializable;
+
+public class StoredChunkInfo implements Serializable {
 
     final private String fileID;
     final int desiredReplicationDegree;

@@ -2,7 +2,7 @@ package com.feup.sdis.actor;
 
 import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
-import com.feup.sdis.model.SerializableHashMap;
+import com.feup.sdis.model.ReplicationCounter;
 import com.feup.sdis.model.Store;
 import com.feup.sdis.peer.Constants;
 
@@ -22,7 +22,7 @@ public class Stored extends MessageActor {
     public void process() {
         final String chunkId = message.getHeader().getChunkId();
         final String senderPeerId = message.getHeader().getSenderId();
-        final SerializableHashMap replCounter = Store.instance().getReplCount();
+        final ReplicationCounter replCounter = Store.instance().getReplCount();
         if (!replCounter.containsPeer(chunkId, senderPeerId)) {
             if (message.getHeader().getVersion().equals(Constants.enhancedVersion) &&
                     Store.instance().getBackedUpFiles().get(message.getHeader().getFileId()) != null &&
