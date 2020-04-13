@@ -54,6 +54,7 @@ mkdir outputs &> /dev/null
 
 # backup, restore and then delete
 if [ $SCENARIO == 1 ]; then
+  echo "Testing backup, restore and delete protocols"
   echo "Starting 5 peers"
   run_peers 5 $ENHANCED
   sleep 1
@@ -90,6 +91,7 @@ if [ $SCENARIO == 1 ]; then
 
 # reclaim tests
 elif [ $SCENARIO == 2 ]; then
+  echo "Testing reclaim protocol"
   echo "Starting 5 peers"
   run_peers 5 $ENHANCED
   sleep 1
@@ -145,6 +147,7 @@ elif [ $SCENARIO == 2 ]; then
 
 # backup same file on different peers
 elif [ $SCENARIO == 3 ]; then
+  echo "Testing backup of same file on different peers"
   echo "Starting 5 peers"
   run_peers 5 $ENHANCED
   sleep 1
@@ -187,6 +190,7 @@ elif [ $SCENARIO == 3 ]; then
 
 # test Store info is kept between executions
 elif [ $SCENARIO == 4 ]; then
+  echo "Testing Store info is kept between executions"
   echo "Starting 5 peers"
   run_peers 5 $ENHANCED
   sleep 0.5
@@ -229,6 +233,7 @@ elif [ $SCENARIO == 4 ]; then
 
 # test delete works if peer initially down
 elif [ $SCENARIO == 5 ]; then
+  echo "Testing enhanced DELETE works even if peer is not up immediately"
   echo "Starting peers 100, 101 and 102"
   run_peer 100 'ENHANCED'
   pid_100=$!
