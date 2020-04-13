@@ -52,17 +52,16 @@ class Task implements Runnable {
             throw new RuntimeException();
         }
 
-        tries++;
-
         try {
-            System.out.println("Sending PUT_CHUNK for chunk " + chunkNo + ", attempt " + tries + "/" + Constants.MAX_PUT_CHUNK_TRIES);
+            System.out.println("Sending PUT_CHUNK for chunk " + chunkNo + ", attempt " + (tries+1) + "/" + Constants.MAX_PUT_CHUNK_TRIES);
 
             socket.send(datagramPacket);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (tries < Constants.MAX_PUT_CHUNK_TRIES) {
+        tries++;
+        if (tries <= Constants.MAX_PUT_CHUNK_TRIES) {
             scheduler.schedule(
                     new Task(tries, chunkId, replDeg, datagramPacket, socket, scheduler, chunkNo),
                     tries == 1 ? 1 : (tries - 1) * 2, TimeUnit.SECONDS);
