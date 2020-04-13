@@ -3,16 +3,29 @@ package com.feup.sdis.actions;
 import com.feup.sdis.peer.Constants;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public interface Action {
-    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(0);
+
+    static String generateId(File file) {
+        try {
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+            long lastMod = file.lastModified();
+            return generateId(fileContent, lastMod);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "error";
+    }
 
     static String generateId(byte[] fileContent, long lastModified) {
         try {

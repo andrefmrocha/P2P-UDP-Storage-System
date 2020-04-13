@@ -51,6 +51,7 @@ public class PutChunk extends MessageActor {
 
         if(!this.checkReplDegree(chunkId, msgHeader)){
             System.out.println("Replication degree for chunk " + chunkId + " has already been hit");
+            return;
         }
 
         // store relevant information

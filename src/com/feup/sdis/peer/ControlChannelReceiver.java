@@ -13,7 +13,7 @@ public class ControlChannelReceiver extends Receiver {
     @Override
     public MessageActor parseMessage(DatagramPacket packet) throws MessageError {
         String msg = new String(packet.getData(), 0, packet.getLength());
-        final String headerMsg = msg.substring(0, msg.indexOf("\n\r"));
+        final String headerMsg = msg.substring(0, msg.indexOf("\r\n"));
         final Header header = Header.parseHeader(headerMsg);
         MessageActor messageActor;
 

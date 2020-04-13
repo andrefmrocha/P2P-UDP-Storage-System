@@ -1,7 +1,13 @@
 package com.feup.sdis.model;
 
 public class MessageError extends Exception {
-    public MessageError(String s) {
+    final String errorMsg;
 
+    public MessageError(String s) {
+        errorMsg = s;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
     }
 }

@@ -13,7 +13,8 @@ public class State implements Action {
     @Override
     public String process() {
         final SortedMap<String, BackupFileInfo> backedFiles = Store.instance().getBackedUpFiles();
-        String message = "Backed up files: " + (backedFiles.size() == 0 ? "NONE" : backedFiles.size()) + "\n";
+        String message = "Peer " + Constants.SENDER_ID + "\n";
+        message += "Backed up files: " + (backedFiles.size() == 0 ? "NONE" : backedFiles.size()) + "\n";
         for(Map.Entry<String, BackupFileInfo> entry : backedFiles.entrySet()) {
             final BackupFileInfo file = entry.getValue();
             message += "  - " + file.getfileID() + "\n"

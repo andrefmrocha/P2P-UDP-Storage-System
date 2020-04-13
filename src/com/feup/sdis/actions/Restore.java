@@ -5,35 +5,46 @@ import com.feup.sdis.model.*;
 import com.feup.sdis.peer.Constants;
 import com.feup.sdis.peer.Peer;
 
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.io.PrintWriter;
+import java.net.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.feup.sdis.actor.Chunk.*;
 import static com.feup.sdis.peer.Constants.MAX_GET_CHUNK_TRIES;
 
 public class Restore implements Action {
+    private final File file;
     private BackupFileInfo backupFileInfo;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(20);
 
     public Restore(String[] args) throws MessageError {
         if (args.length != 2) {
             throw new MessageError("Wrong number of parameters!");
         }
 
-        for (BackupFileInfo f : Store.instance().getBackedUpFiles().values()) {
-            if (f.getOriginalPath().equals(args[1])) {
-                backupFileInfo = f;
-                break;
-            }
-        }
+        file = new File(args[1]);
+        if (!file.exists()) return;
+
+        String fileID = Action.generateId(file);
+        backupFileInfo = Store.instance().getBackedUpFiles().get(fileID);
     }
 
     @Override
     public String process() {
+        if (!file.exists()) {
+            System.out.println("File does not exist");
+            return "File does not exist";
+        }
+
         if (backupFileInfo == null) {
-            return "File is not backed up!";
+            System.out.println("File was not backed up through this peer");
+            return "File was not backed up through this peer";
         }
 
         backupFileInfo.getRestoredChunks().clear();
@@ -47,8 +58,9 @@ public class Restore implements Action {
             final String senderId = Constants.SENDER_ID;
             System.out.println("Starting restore protocol for file " + fileID);
             for (int i = 0; i < numChunks; i++) {
-                final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version,
-                                    GetChunk.type, senderId, fileID, i);
+
+                final Header header = Peer.enhanced ? prepareEnhancedRestored(fileID, senderId, i)
+                        : new Header(Constants.version, GetChunk.type, senderId, fileID, i);
                 final Message message = new Message(header);
                 final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
 
@@ -56,7 +68,7 @@ public class Restore implements Action {
                 final AtomicInteger tries = new AtomicInteger();
                 scheduler.scheduleAtFixedRate(() -> {
                     if (backupFileInfo.getRestoredChunks().get(chunkN) != null || backupFileInfo.isFullyRestored() ||
-                        tries.get() >= MAX_GET_CHUNK_TRIES)
+                            tries.get() >= MAX_GET_CHUNK_TRIES)
                         throw new RuntimeException();
 
                     tries.getAndIncrement();
@@ -66,12 +78,93 @@ public class Restore implements Action {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }, 1, 3, TimeUnit.SECONDS);
+                }, 0, 3, TimeUnit.SECONDS);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         return "Restored " + backupFileInfo.getOriginalFilename();
+    }
+
+
+    private ServerSocket isAvailable(int port) {
+        ServerSocket server = null;
+        DatagramSocket datagramSocket = null;
+        try {
+            server = new ServerSocket(port);
+            server.setReuseAddress(true);
+            datagramSocket = new DatagramSocket(port);
+            datagramSocket.setReuseAddress(true);
+        } catch (IOException e) {
+        } finally {
+            if (datagramSocket != null) {
+                datagramSocket.close();
+            }
+        }
+
+        return server;
+    }
+
+
+    private Header prepareEnhancedRestored(String fileID, String senderId, int chunkNo) {
+        ServerSocket socket = null;
+        for (int port = Constants.TCP_PORT; port < Constants.TCP_PORT + 1000; port++) {
+            if ((socket = isAvailable(port)) != null) {
+                System.out.println("Found available port in " + port);
+                break;
+            }
+        }
+
+        if (socket == null) {
+            System.out.println("Failed to allocate a port, exiting.");
+            return null;
+        }
+
+        ServerSocket finalSocket = socket;
+        scheduler.execute(() -> {
+            try {
+                final Socket client = finalSocket.accept();
+                if (!isFileBackedUp(backupFileInfo)) {
+                    Store.instance().getChunksSent().add(fileID + Constants.idSeparation + chunkNo);
+                    System.out.println("This peer was not the Restore initiator");
+                    return;
+                }
+                final PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+                final DataInputStream in = new DataInputStream(client.getInputStream());
+
+                if (!initialChecks(chunkNo, backupFileInfo)) {
+                    client.shutdownOutput();
+                    final int length = in.readInt();
+                    if (length > 0) {
+                        final byte[] message = new byte[length];
+                        in.readFully(message, 0, message.length);
+                        storeFile(message, chunkNo, backupFileInfo);
+                    } else {
+                        System.out.println("Read length " + length);
+                    }
+
+                } else {
+                    out.println("N/N"); // Not-needed
+                    out.flush();
+                }
+                while (in.read() != -1) ;
+                client.shutdownInput();
+                client.close();
+                finalSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+
+        try {
+            return new Header(Constants.enhancedVersion,
+                    GetChunk.type, senderId, fileID, chunkNo, -1,
+                    InetAddress.getLocalHost().getHostAddress() + ":" + socket.getLocalPort());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

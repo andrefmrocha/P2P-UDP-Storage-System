@@ -26,14 +26,18 @@ public class Stored extends MessageActor {
         if (!replCounter.containsPeer(chunkId, senderPeerId)) {
             if (message.getHeader().getVersion().equals(Constants.enhancedVersion) &&
                     Store.instance().getBackedUpFiles().get(message.getHeader().getFileId()) != null &&
-                    replCounter.getSize(chunkId) >= message.getHeader().getReplicationDeg())
+                    replCounter.getSize(chunkId) >= message.getHeader().getReplicationDeg()) {
+                System.out.println("Sending EXCESS msg to peer " + senderPeerId);
                 this.removeExcess(senderPeerId);
+            }
             else {
                 System.out.println("Updated replication table for chunk " + chunkId + ", added peer " + senderPeerId);
                 replCounter.addNewID(chunkId, senderPeerId);
             }
 
         }
+        else
+            System.out.println("Peer is already in replication table");
     }
 
     private void removeExcess(String senderPeerId) {

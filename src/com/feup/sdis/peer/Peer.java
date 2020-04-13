@@ -47,6 +47,7 @@ public class Peer {
             final Registry registry = LocateRegistry.getRegistry(Constants.RMI_PORT);
             registry.rebind(Constants.SENDER_ID, stub);
 
+            System.out.println("*\nStarting Peer " + SENDER_ID);
             createPeerFolders();
             System.out.println("Peer " + Constants.SENDER_ID + " ready");
 

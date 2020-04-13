@@ -1,13 +1,11 @@
 package com.feup.sdis.actor;
 
-import com.feup.sdis.model.Header;
 import com.feup.sdis.model.Message;
-import com.feup.sdis.peer.Constants;
 
-import java.io.*;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class EnhancedGetChunk extends GetChunk {
@@ -15,62 +13,35 @@ public class EnhancedGetChunk extends GetChunk {
         super(message);
     }
 
-    private ServerSocket socket;
-
-
-    public ServerSocket isAvailable(int port) {
-        ServerSocket server = null;
-        DatagramSocket datagramSocket = null;
-        try {
-            server = new ServerSocket(port);
-            server.setReuseAddress(true);
-            datagramSocket = new DatagramSocket(port);
-            datagramSocket.setReuseAddress(true);
-        } catch (IOException e) {
-        } finally {
-            if (datagramSocket != null) {
-                datagramSocket.close();
-            }
-        }
-
-        return server;
-    }
-
     @Override
     protected void sendFile(String fileID, String chunkNo, byte[] fileContent) throws IOException {
-        if (socket == null) {
-            for (int port = Constants.TCP_PORT; port < Constants.TCP_PORT + 1000; port++) {
-                if ((socket = isAvailable(port)) != null) {
-                    System.out.println("Found available port in " + port);
-                    break;
-                }
-            }
-        }
-
-        if (socket == null) {
-            System.out.println("Failed to allocate a port, exiting.");
+        final String extraParam = message.getHeader().getExtraParam();
+        final String[] splitted = extraParam.split(":");
+        if (splitted.length != 2) {
+            System.out.println("hostname:port not successfully found, exiting");
             return;
         }
+        final String hostname = splitted[0];
+        final int port = Integer.parseInt(splitted[1]);
 
-        final Header sendingHeader = new Header(
-                Constants.enhancedVersion,
-                Chunk.type, Constants.SENDER_ID,
-                fileID, Integer.parseInt(chunkNo), -1,
-                InetAddress.getLocalHost().getHostAddress() + ":" + socket.getLocalPort());
-        if (! this.sendGetChunk(Constants.MC_PORT, Constants.MDR_CHANNEL, new Message(sendingHeader)))
+        Socket client;
+        try {
+            client = new Socket(hostname, port);
+        }
+        catch (IOException e) {
+            System.out.println("Chunk " + chunkNo + " of file " + fileID + " has already been sent");
             return;
-
-        final Socket client = socket.accept();
+        }
         final DataOutputStream out = new DataOutputStream(client.getOutputStream());
         final BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         if (in.readLine() == null) {
             out.writeInt(fileContent.length);
             out.write(fileContent);
             out.flush();
+            client.shutdownOutput();
         }
-        while (!client.isClosed() && in.readLine() != null) ;
-        out.close();
-        in.close();
+        while (in.readLine() != null) ;
+        client.shutdownInput();
         client.close();
     }
 }

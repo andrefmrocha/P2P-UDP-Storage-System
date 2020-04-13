@@ -32,7 +32,7 @@ public class Message {
     public DatagramPacket generatePacket(InetAddress group, int port) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
         try {
-            outputStream.write((header.toString() + "\n\r").getBytes());
+            outputStream.write((header.toString() + "\r\n").getBytes());
             if(body != null)
                 outputStream.write(body);
         } catch (IOException e) {
