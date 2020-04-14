@@ -13,7 +13,7 @@ SCENARIO=$1
 ENHANCED=$2
 
 run_client() {
-  ./run_client.sh $1 $2 $3 $4 &> /dev/null
+  ./run_client.sh $1 $2 $3 $4 >> outputs/clients.txt
 }
 
 FIFO_PATH='/tmp/sdis_proj1.fifo'
@@ -54,7 +54,7 @@ clean_peers_folders
 mkdir outputs &> /dev/null
 
 echo "Compiling..."
-./compile.sh
+./compile.sh &> /dev/null
 
 # backup, restore and then delete
 if [ $SCENARIO == 1 ]; then

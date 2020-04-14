@@ -17,7 +17,7 @@ if [ "$#" == 2 -a "$2" == 1 ]; then
   ENHANCED="ENHANCED"
 fi
 
-# create ouput folder
+# create output folder
 mkdir outputs &> /dev/null
 
 # start processes

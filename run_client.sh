@@ -14,4 +14,4 @@ peer_ap=$1
 sub_protocol=$2
 opnd_1=$3
 opnd_2=$4
-java -cp out/production/sdis1920-t1g02/ TestApp $peer_ap $sub_protocol $opnd_1 $opnd_2 >> outputs/clients.txt
+java -cp out/production/sdis1920-t1g02/ TestApp $peer_ap $sub_protocol $opnd_1 $opnd_2
