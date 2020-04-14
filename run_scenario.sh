@@ -1,16 +1,43 @@
 #!/bin/bash
 
 # print usage
-if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
-  echo "Usage: $0 SCENARIO <ENHANCED>" >&2
+if [ "$#" != 1 -a "$#" != 2 -a "$#" != 8 ]; then
+  echo "Usage: $0 SCENARIO <VERSION> <MC_ADDR MC_PORT MDB_ADDR MDB_PORT MDR_ADDR MDR_PORT>" >&2
   echo "  SCENARIO specifies the execution scenario to run"
-  echo "  Valid values start at 1"
-  echo "  ENHANCED is an optional flag that specifies whether peers should be enhanced, 1 for true"
+  echo "    - Valid values start at 1"
+  echo "  VERSION is the peer protocol version, 1.0 is base, 1.1 is enhanced. By default its 1.0."
+  echo ""
+  echo "  The remaining arguments are optional, but must be given together: "
+  echo "  MC_ADDR is the multicast address to be used for the MC channel"
+  echo "  MC_PORT is the port to be used for the MC channel"
+  echo "  MDB_ADDR is the multicast address to be used for the MDB channel"
+  echo "  MC_PORT is the port to be used for the MC channel"
+  echo "  MDR_ADDR is the multicast address to be used for the MDR channel"
+  echo "  MDR_PORT is the port to be used for the MDR channel"
   exit 1
 fi
 
+# default values
 SCENARIO=$1
-ENHANCED=$2
+VERSION='1.0'
+MC_ADDR='224.0.0.0'
+MC_PORT=8080
+MDB_ADDR='224.0.0.1'
+MDB_PORT=8080
+MDR_ADDR='224.0.0.2'
+MDR_PORT=8080
+
+if [ "$#" == 2 ]; then
+  VERSION=$2
+elif [ "$#" == 8 ]; then
+  VERSION=$2
+  MC_ADDR=$3
+  MC_PORT=$4
+  MDB_ADDR=$5
+  MDB_PORT=$6
+  MDR_ADDR=$7
+  MDR_PORT=$8
+fi
 
 run_client() {
   ./run_client.sh $1 $2 $3 $4 >> outputs/clients.txt
@@ -19,13 +46,12 @@ run_client() {
 FIFO_PATH='/tmp/sdis_proj1.fifo'
 run_peers() {
   mkfifo $FIFO_PATH
-  (cat $FIFO_PATH | ./run_peers.sh $1 $2 &> /dev/null)&
+  (cat $FIFO_PATH | ./run_peers.sh $1 $VERSION $MC_ADDR $MC_PORT $MDB_ADDR $MDB_PORT $MDR_ADDR $MDR_PORT &> /dev/null)&
 }
 
 run_peer() {
   id=$1
-  ENHANCED=$2
-  (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $id $ENHANCED &>> outputs/p$id.txt)&
+  (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $VERSION $id $id $MC_ADDR $MC_PORT $MDB_ADDR $MDB_PORT $MDR_ADDR $MDR_PORT &>> outputs/p$id.txt)&
 }
 
 stop_peers() {
@@ -60,7 +86,7 @@ echo "Compiling..."
 if [ $SCENARIO == 1 ]; then
   echo "Testing backup, restore and delete protocols"
   echo "Starting 5 peers"
-  run_peers 5 $ENHANCED
+  run_peers 5
   sleep 1
 
   echo "Backing up testfile.txt on peer 1"
@@ -97,7 +123,7 @@ if [ $SCENARIO == 1 ]; then
 elif [ $SCENARIO == 2 ]; then
   echo "Testing reclaim protocol"
   echo "Starting 5 peers"
-  run_peers 5 $ENHANCED
+  run_peers 5
   sleep 1
 
   echo "Backing up testfile.txt on peer 1"
@@ -153,7 +179,7 @@ elif [ $SCENARIO == 2 ]; then
 elif [ $SCENARIO == 3 ]; then
   echo "Testing backup of same file on different peers"
   echo "Starting 5 peers"
-  run_peers 5 $ENHANCED
+  run_peers 5
   sleep 1
 
   echo "Backing up testfile.txt on peer 1"
@@ -196,7 +222,7 @@ elif [ $SCENARIO == 3 ]; then
 elif [ $SCENARIO == 4 ]; then
   echo "Testing Store info is kept between executions"
   echo "Starting 5 peers"
-  run_peers 5 $ENHANCED
+  run_peers 5
   sleep 0.5
 
   echo "> run_client 1 BACKUP testfile.txt 3"
@@ -214,7 +240,7 @@ elif [ $SCENARIO == 4 ]; then
   sleep 0.5
 
   echo "Restarting the 5 peers"
-  run_peers 5 $ENHANCED
+  run_peers 5
   sleep 0.5
 
   echo "> run_client 1 BACKUP testfile.txt 3"
@@ -239,13 +265,13 @@ elif [ $SCENARIO == 4 ]; then
 elif [ $SCENARIO == 5 ]; then
   echo "Testing enhanced DELETE works even if peer is not up immediately"
   echo "Starting peers 100, 101 and 102"
-  run_peer 100 'ENHANCED'
+  run_peer 100
   pid_100=$!
 
-  run_peer 101 'ENHANCED'
+  run_peer 101
   pid_101=$!
 
-  run_peer 102 'ENHANCED'
+  run_peer 102
   pid_102=$!
   sleep 0.5
 
@@ -264,7 +290,7 @@ elif [ $SCENARIO == 5 ]; then
   sleep 2
 
   echo "Starting peer 102 again"
-  run_peer 102 'ENHANCED'
+  run_peer 102
   pid_102=$!
   echo "Waiting for the DELETE message to be resent"
   echo "> sleep 40"

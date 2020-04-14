@@ -1,20 +1,19 @@
 #!/bin/bash
 
 # print usage
-if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
-  echo "Usage: $0 N_PEERS <ENHANCED>" >&2
+if [ "$#" != 8 ]; then
+  echo "Usage: $0 N_PEERS VERSION MC_ADDR MC_PORT MDB_ADDR MDB_PORT MDR_ADDR MDR_PORT"
   echo "  N_PEERS is the number of peers to start"
-  echo "  IDs will be assigned incrementally starting at 1"
-  echo "  For example, N_PEERS = 4 starts peers 1,2,3,4"
-  echo "  ENHANCED is an optional flag signaling if the ENHANCED protocol should be used, 1 for true"
+  echo "    - IDs and Access Points will be assigned incrementally, starting at 1"
+  echo "    - For example, N_PEERS = 4 starts peers with IDs and Access Points 1,2,3,4"
+  echo "  VERSION is the peer protocol version, 1.0 is base, 1.1 is enhanced. By default its 1.0."
+  echo "  MC_ADDR is the multicast address to be used for the MC channel"
+  echo "  MC_PORT is the port to be used for the MC channel"
+  echo "  MDB_ADDR is the multicast address to be used for the MDB channel"
+  echo "  MC_PORT is the port to be used for the MC channel"
+  echo "  MDR_ADDR is the multicast address to be used for the MDR channel"
+  echo "  MDR_PORT is the port to be used for the MDR channel"
   exit 1
-fi
-
-# enhanced flag
-ENHANCED=''
-if [ "$#" == 2 -a "$2" == 1 ]; then
-  echo 'Using enhanced protocol'
-  ENHANCED="ENHANCED"
 fi
 
 # create output folder
@@ -25,7 +24,7 @@ N_PEERS=$1
 echo "Starting $N_PEERS peers"
 for (( id=1; id<=$N_PEERS; id++ ))
 do
-    (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $id $ENHANCED &>> outputs/p$id.txt)&
+    (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $2 $id $id $3 $4 $5 $6 $7 $8 &>> outputs/p$id.txt)&
     pids[$id]=$!
 done
 

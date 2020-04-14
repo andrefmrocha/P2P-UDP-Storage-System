@@ -66,7 +66,7 @@ public class GetChunk extends MessageActor {
 
                     final InetAddress group = InetAddress.getByName(groupChannel);
                     final MulticastSocket socket = SocketFactory.buildMulticastSocket(port, group);
-                    final DatagramPacket datagramPacket = msg.generatePacket(group, Constants.MDR_PORT);
+                    final DatagramPacket datagramPacket = msg.generatePacket(group, port);
                     socket.send(datagramPacket);
                 } catch (IOException e) {
                     e.printStackTrace();

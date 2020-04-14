@@ -10,4 +10,10 @@ public class MessageError extends Exception {
     public String getErrorMsg() {
         return errorMsg;
     }
+
+    @Override
+    public void printStackTrace() {
+        System.out.println(errorMsg);
+        super.printStackTrace();
+    }
 }

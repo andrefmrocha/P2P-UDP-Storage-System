@@ -29,7 +29,7 @@ public class DataRestoreChannelReceiver extends Receiver {
 
     @Override
     int getPort() {
-        return Constants.MC_PORT;
+        return Constants.MDR_PORT;
     }
 
     @Override
