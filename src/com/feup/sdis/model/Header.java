@@ -45,7 +45,7 @@ public class Header {
     public Header(String version, String messageType, String senderId, String fileId, int chunkNo, int replicationDeg, String extraParam) {
         this.messageType = messageType;
         this.senderId = senderId;
-        this.fileId = fileId;
+        this.fileId = fileId.toLowerCase();
         final String chunkString = Integer.toString(chunkNo);
         if (version.length() != 3 || chunkString.length() > 6 || replicationDeg > 9)
             throw new IllegalArgumentException();
@@ -105,6 +105,6 @@ public class Header {
         return version + " " + messageType +
                 " " + senderId + " " + fileId + " " +
                 (chunkNo.equals("-1") ? "" : chunkNo) + " " + (replicationDeg == -1 ? "" : replicationDeg) +
-                ((extraParam == null) ? "" : (extraParam)) + "\r\n";
+                ((extraParam == null) ? "" : (extraParam)) + " \r\n";
     }
 }

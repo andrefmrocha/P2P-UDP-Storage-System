@@ -1,6 +1,7 @@
 Java version: 8
+The RMI registry is created within the Peers if it doesn't already exist, there is no need to create it outside.
 
-The applications can be executed via 2 different ways:
+The applications can be executed in multiple ways:
 - Pre-defined scenarios:
   1. Using the script 'run_scenario.sh', where some pre-defined scenarios of execution where automated.
      It starts by compiling and then, according to the given scenario, starts the peers and clients accordingly.

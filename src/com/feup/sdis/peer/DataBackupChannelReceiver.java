@@ -29,7 +29,7 @@ public class DataBackupChannelReceiver extends Receiver {
 
     @Override
     int getPort() {
-        return Constants.MC_PORT;
+        return Constants.MDB_PORT;
     }
 
     @Override

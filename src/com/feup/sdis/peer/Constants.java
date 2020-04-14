@@ -4,16 +4,17 @@ public class Constants {
     public static final int MAX_DELETE_TRIES = 10;
     public static final int DELETE_INTERVAL = 30;
     private Constants() {} // no way to instantiate this class
-    public static final String MC_CHANNEL = "224.0.0.0";
-    public static final String MDB_CHANNEL = "224.0.0.1";
-    public static final String MDR_CHANNEL = "224.0.0.2";
-    public static final int MC_PORT = 8080;
+    public static String MC_CHANNEL = "224.0.0.0";
+    public static String MDB_CHANNEL = "224.0.0.1";
+    public static String MDR_CHANNEL = "224.0.0.2";
+    public static int MC_PORT = 8080;
+    public static int MDB_PORT = 8080;
+    public static int MDR_PORT = 8080;
     public static final int MC_TTL = 1;
     public static final int MC_TIMEOUT = 3000;
     public static final int PACKET_HEADER_PADDING = 150;
     public static final String version = "1.0";
     public static final String enhancedVersion = "1.1";
-    public static final int MAX_FILE_SIZE = 6400000;
     public static final int BLOCK_SIZE = 64000;
     public static final int MAX_PUT_CHUNK_TRIES = 5;
     public static final int MAX_GET_CHUNK_TRIES = 5;

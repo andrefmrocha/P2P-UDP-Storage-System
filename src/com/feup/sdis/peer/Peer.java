@@ -17,25 +17,44 @@ public class Peer {
     public static boolean enhanced = false;
     public static void main(String[] args) {
 
-        if (args.length == 0 || args.length > 2) {
+        if (args.length != 9) {
             System.out.println("Invalid number of arguments");
             return;
         }
 
-        if(args.length == 2 && args[1].equals("ENHANCED")){
+        String protocolVersion = args[0];
+        String peerID = args[1];
+        String accessPoint = args[2];
+        String MCAddress = args[3];
+        String MDBAddress = args[5];
+        String MDRAddress = args[7];
+        int MCPort;
+        int MDBPort;
+        int MDRPort ;
+
+        if(protocolVersion.equals("1.1")){
             enhanced = true;
         }
 
         try {
-            Integer.parseInt(args[0]);
+            Integer.parseInt(peerID);
+            MCPort = Integer.parseInt(args[4]);
+            MDBPort = Integer.parseInt(args[6]);
+            MDRPort = Integer.parseInt(args[8]);
         } catch (NumberFormatException nfe) {
-            System.out.println("ID must be an integer");
+            System.out.println("Ports must be numeric");
             return;
         }
-        Constants.SENDER_ID = args[0];
-        Constants.peerRootFolder = Constants.peerParentFolder + "peer-" + args[0] + "/";
+        Constants.SENDER_ID = peerID;
+        Constants.peerRootFolder = Constants.peerParentFolder + "peer-" + peerID + "/";
         Constants.backupFolder = Constants.peerRootFolder + "backups/";
         Constants.restoredFolder = Constants.peerRootFolder + "restored/";
+        Constants.MC_CHANNEL = MCAddress;
+        Constants.MC_PORT = MCPort;
+        Constants.MDB_CHANNEL = MDBAddress;
+        Constants.MDB_PORT = MDBPort;
+        Constants.MDR_CHANNEL = MDRAddress;
+        Constants.MDR_PORT = MDRPort;
 
         BSDispatcher dispatcher = new BSDispatcher();
         try {
@@ -45,7 +64,7 @@ public class Peer {
             }
             catch (ExportException e) {} // already exists
             final Registry registry = LocateRegistry.getRegistry(Constants.RMI_PORT);
-            registry.rebind(Constants.SENDER_ID, stub);
+            registry.rebind(accessPoint, stub);
 
             System.out.println("*\nStarting Peer " + SENDER_ID);
             createPeerFolders();
