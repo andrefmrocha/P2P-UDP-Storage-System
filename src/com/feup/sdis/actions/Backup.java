@@ -100,12 +100,12 @@ public class Backup implements Action {
 
     public static void sendPutChunk(String fileId, byte[] chunk, int chunkNo, int replDeg, ScheduledExecutorService scheduler) throws IOException {
         final InetAddress group = InetAddress.getByName(Constants.MDB_CHANNEL);
-        final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
+        final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MDB_PORT, group);
         final String senderId = Constants.SENDER_ID;
         final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version
                 , PutChunk.type, senderId, fileId, chunkNo, replDeg);
         final Message message = new Message(header, chunk);
-        final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
+        final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MDB_PORT);
         final String chunkId = message.getHeader().getChunkId();
         scheduler.schedule(
                 new Task(0, chunkId, replDeg, datagramPacket, socket, scheduler, chunkNo), 0, TimeUnit.SECONDS);
@@ -113,12 +113,12 @@ public class Backup implements Action {
 
     public static void sendPutChunk(String fileId, byte[] chunk, int chunkNo, int replDeg) throws IOException {
         final InetAddress group = InetAddress.getByName(Constants.MDB_CHANNEL);
-        final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MC_PORT, group);
+        final MulticastSocket socket = SocketFactory.buildMulticastSocket(Constants.MDB_PORT, group);
         final String senderId = Constants.SENDER_ID;
         final Header header = new Header(Peer.enhanced ? Constants.enhancedVersion : Constants.version
                 , PutChunk.type, senderId, fileId, chunkNo, replDeg);
         final Message message = new Message(header, chunk);
-        final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MC_PORT);
+        final DatagramPacket datagramPacket = message.generatePacket(group, Constants.MDB_PORT);
         socket.send(datagramPacket);
     }
 

@@ -51,7 +51,7 @@ public class GetChunk extends MessageActor {
                 fileID, Integer.parseInt(chunkNo));
 
         final Message msg = new Message(sendingHeader, fileContent);
-        this.sendGetChunk(Constants.MC_PORT, Constants.MDR_CHANNEL, msg);
+        this.sendGetChunk(Constants.MDR_PORT, Constants.MDR_CHANNEL, msg);
     }
 
     protected boolean sendGetChunk(int port, String groupChannel, Message msg) {
@@ -66,7 +66,7 @@ public class GetChunk extends MessageActor {
 
                     final InetAddress group = InetAddress.getByName(groupChannel);
                     final MulticastSocket socket = SocketFactory.buildMulticastSocket(port, group);
-                    final DatagramPacket datagramPacket = msg.generatePacket(group, Constants.MC_PORT);
+                    final DatagramPacket datagramPacket = msg.generatePacket(group, Constants.MDR_PORT);
                     socket.send(datagramPacket);
                 } catch (IOException e) {
                     e.printStackTrace();
