@@ -89,7 +89,7 @@ public class Delete implements Action {
                     throw new RuntimeException();
 
                 try {
-                    System.out.println("Sending DELETE message for file " + fileID + ", attempt " + tries + "/" + Constants.MAX_DELETE_TRIES);
+                    System.out.println("Sending DELETE message for file " + fileID + ", attempt " + (tries.get()+1) + "/" + Constants.MAX_DELETE_TRIES);
                     socket.send(msg.generatePacket(group, Constants.MC_PORT));
                 } catch (IOException e) {
                     e.printStackTrace();

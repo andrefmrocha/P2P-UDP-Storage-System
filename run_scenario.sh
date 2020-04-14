@@ -266,7 +266,7 @@ elif [ $SCENARIO == 5 ]; then
   echo "Testing enhanced DELETE works even if peer is not up immediately"
   echo "Starting peers 100, 101 and 102"
   cd out/production/sdis1920-t1g02
-  rmiregistry &
+  rmiregistry&
   rmi_pid=$!
   cd ../../..
   sleep 1
@@ -303,7 +303,6 @@ elif [ $SCENARIO == 5 ]; then
   sleep 40
 
   echo "Killing all peers"
-  echo $rmi_pid
   kill $rmi_pid
   kill $pid_100
   kill $pid_101
