@@ -49,8 +49,11 @@ clean_peers_folders()
   rm -rf ./peers
 }
 
+echo "Cleaning peers folders..."
 clean_peers_folders
 mkdir outputs &> /dev/null
+
+echo "Compiling..."
 ./compile.sh
 
 # backup, restore and then delete
