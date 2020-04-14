@@ -5,6 +5,7 @@ if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
   echo "Usage: $0 N_PEERS <ENHANCED>" >&2
   echo "  N_PEERS is the number of peers to start"
   echo "  IDs will be assigned incrementally starting at 1"
+  echo "  For example, N_PEERS = 4 starts peers 1,2,3,4"
   echo "  ENHANCED is an optional flag signaling if the ENHANCED protocol should be used, 1 for true"
   exit 1
 fi

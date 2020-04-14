@@ -1,5 +1,3 @@
-package com.feup.sdis.client;
-
 import com.feup.sdis.actions.Dispatcher;
 import com.feup.sdis.model.MessageError;
 
@@ -10,7 +8,7 @@ import java.rmi.registry.Registry;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Client {
+public class TestApp {
 
     public static void main(String[] args) throws IOException, NotBoundException {
         if(args.length < 2) {

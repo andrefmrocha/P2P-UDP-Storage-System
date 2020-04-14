@@ -1,11 +1,8 @@
 package com.feup.sdis.model;
 
-import java.io.*;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ReplicationCounter extends SerializableHashMap<Set<String>>{
 
