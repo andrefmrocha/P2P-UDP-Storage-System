@@ -51,6 +51,7 @@ clean_peers_folders()
 
 clean_peers_folders
 mkdir outputs &> /dev/null
+./compile.sh
 
 # backup, restore and then delete
 if [ $SCENARIO == 1 ]; then
