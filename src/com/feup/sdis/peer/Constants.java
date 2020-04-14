@@ -1,7 +1,7 @@
 package com.feup.sdis.peer;
 
 public class Constants {
-    public static final int MAX_DELETE_TRIES = 10; //TODO: Check these Magic Numbers
+    public static final int MAX_DELETE_TRIES = 10;
     public static final int DELETE_INTERVAL = 30;
     private Constants() {} // no way to instantiate this class
     public static final String MC_CHANNEL = "224.0.0.0";
@@ -27,6 +27,3 @@ public class Constants {
     public static String backupFolder = "unknown";
     public static String restoredFolder = "unknown";
 }
-
-// TODO how to handle multiple backups of same file in different peers
-// TODO order chunks by size on reclaim
