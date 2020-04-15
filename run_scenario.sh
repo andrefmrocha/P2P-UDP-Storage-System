@@ -40,7 +40,7 @@ elif [ "$#" == 8 ]; then
 fi
 
 run_client() {
-  ./run_client.sh $1 $2 $3 $4 >> outputs/clients.txt
+  ./test.sh $1 $2 $3 $4 >> outputs/clients.txt
 }
 
 FIFO_PATH='/tmp/sdis_proj1.fifo'
@@ -51,7 +51,7 @@ run_peers() {
 
 run_peer() {
   id=$1
-  (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $VERSION $id $id $MC_ADDR $MC_PORT $MDB_ADDR $MDB_PORT $MDR_ADDR $MDR_PORT &>> outputs/p$id.txt)&
+  (java -cp build/ com.feup.sdis.peer.Peer $VERSION $id $id $MC_ADDR $MC_PORT $MDB_ADDR $MDB_PORT $MDR_ADDR $MDR_PORT &>> outputs/p$id.txt)&
 }
 
 stop_peers() {
@@ -265,10 +265,10 @@ elif [ $SCENARIO == 4 ]; then
 elif [ $SCENARIO == 5 ]; then
   echo "Testing enhanced DELETE works even if peer is not up immediately"
   echo "Starting peers 100, 101 and 102"
-  cd out/production/sdis1920-t1g02
+  cd build
   rmiregistry&
   rmi_pid=$!
-  cd ../../..
+  cd ..
   sleep 1
 
   run_peer 100

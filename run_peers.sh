@@ -47,7 +47,7 @@ mkdir outputs &> /dev/null
 echo "Starting $N_PEERS peers"
 for (( id=1; id<=$N_PEERS; id++ ))
 do
-    (java -cp out/production/sdis1920-t1g02/ com.feup.sdis.peer.Peer $VERSION $id $id $MC_ADDR $MC_PORT $MDB_ADDR $MDB_PORT $MDR_ADDR $MDR_PORT &>> outputs/p$id.txt)&
+    (java -cp build/ com.feup.sdis.peer.Peer $VERSION $id $id $MC_ADDR $MC_PORT $MDB_ADDR $MDB_PORT $MDR_ADDR $MDR_PORT &>> outputs/p$id.txt)&
     pids[$id]=$!
 done
 
