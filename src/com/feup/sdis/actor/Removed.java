@@ -7,9 +7,6 @@ import com.feup.sdis.peer.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
